@@ -2,12 +2,15 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AppContext = createContext();
 
-// Default starter accounts if none exist in localStorage
+// Dedicated Cloud Sync Database Object ID
+const CLOUD_SYNC_ID = 'ff808181a09d98f701a0e297ec9723dc';
+const CLOUD_API_URL = `https://api.restful-api.dev/objects/${CLOUD_SYNC_ID}`;
+
+// Default starter accounts if cloud is empty
 const DEFAULT_ACCOUNTS = [
   { id: 'u1', username: 'admin', password: '123', name: 'Primary User', role: 'Personal Growth Tracker', avatarColor: '#6366f1' }
 ];
 
-// Clean empty initial data structure for new user accounts
 const EMPTY_USER_DATA = {
   dailyGoals: [],
   monthlyGoals: [],
@@ -19,7 +22,9 @@ const EMPTY_USER_DATA = {
 export const AppProvider = ({ children }) => {
   // Theme state
   const [theme, setTheme] = useState(() => localStorage.getItem('self_tracker_theme') || 'dark');
-  
+  const [isCloudSyncing, setIsCloudSyncing] = useState(false);
+  const [cloudStatus, setCloudStatus] = useState('Online');
+
   // Registered Accounts State
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('self_tracker_registered_users');
@@ -32,12 +37,16 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : (users[0] || DEFAULT_ACCOUNTS[0]);
   });
 
-  // Data per active logged-in user
+  // User Datasets map: { [userId]: userData }
+  const [allUserDatasets, setAllUserDatasets] = useState(() => {
+    const saved = localStorage.getItem('self_tracker_all_user_datasets');
+    return saved ? JSON.parse(saved) : { u1: EMPTY_USER_DATA };
+  });
+
+  // Active User Data
   const [userData, setUserData] = useState(() => {
-    const savedUser = localStorage.getItem('self_tracker_active_user');
-    const userId = savedUser ? JSON.parse(savedUser).id : 'u1';
-    const storedData = localStorage.getItem(`self_tracker_data_${userId}`);
-    return storedData ? JSON.parse(storedData) : EMPTY_USER_DATA;
+    const userId = activeUser ? activeUser.id : 'u1';
+    return allUserDatasets[userId] || EMPTY_USER_DATA;
   });
 
   // Modal Control & View States
@@ -51,39 +60,98 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('self_tracker_theme', theme);
   }, [theme]);
 
-  // Persist registered users list immediately
+  // Initial Cloud Data Fetch on App Load (Sync PC & Mobile)
   useEffect(() => {
-    localStorage.setItem('self_tracker_registered_users', JSON.stringify(users));
-  }, [users]);
+    const fetchCloudData = async () => {
+      try {
+        setIsCloudSyncing(true);
+        const res = await fetch(CLOUD_API_URL);
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.data) {
+            const cloudUsers = json.data.users && json.data.users.length > 0 ? json.data.users : users;
+            const cloudDatasets = json.data.userDatasets || allUserDatasets;
+
+            setUsers(cloudUsers);
+            setAllUserDatasets(cloudDatasets);
+            localStorage.setItem('self_tracker_registered_users', JSON.stringify(cloudUsers));
+            localStorage.setItem('self_tracker_all_user_datasets', JSON.stringify(cloudDatasets));
+
+            // Sync current active user data
+            if (activeUser && cloudDatasets[activeUser.id]) {
+              setUserData(cloudDatasets[activeUser.id]);
+            }
+            setCloudStatus('Synced');
+          }
+        }
+      } catch (err) {
+        console.warn('Cloud sync offline, using local storage cache.');
+        setCloudStatus('Local Only');
+      } finally {
+        setIsCloudSyncing(false);
+      }
+    };
+
+    fetchCloudData();
+  }, []);
+
+  // Helper function to push state updates to Cloud Database
+  const pushToCloud = async (updatedUsers, updatedDatasets) => {
+    setIsCloudSyncing(true);
+    try {
+      await fetch(CLOUD_API_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'selftracker_prod_v1',
+          data: {
+            users: updatedUsers || users,
+            userDatasets: updatedDatasets || allUserDatasets
+          }
+        })
+      });
+      setCloudStatus('Synced');
+    } catch (err) {
+      console.warn('Failed cloud push:', err);
+      setCloudStatus('Local Only');
+    } finally {
+      setIsCloudSyncing(false);
+    }
+  };
 
   // Load user data when active user changes
   useEffect(() => {
     if (activeUser) {
       localStorage.setItem('self_tracker_active_user', JSON.stringify(activeUser));
-      const storedData = localStorage.getItem(`self_tracker_data_${activeUser.id}`);
-      if (storedData) {
-        setUserData(JSON.parse(storedData));
-      } else {
-        setUserData(EMPTY_USER_DATA);
-        localStorage.setItem(`self_tracker_data_${activeUser.id}`, JSON.stringify(EMPTY_USER_DATA));
-      }
+      const currentData = allUserDatasets[activeUser.id] || EMPTY_USER_DATA;
+      setUserData(currentData);
     }
-  }, [activeUser]);
+  }, [activeUser, allUserDatasets]);
 
-  // Save user data changes to localStorage
+  // Save active user data changes to local & cloud
   const saveUserData = (newData) => {
+    if (!activeUser) return;
     setUserData(newData);
-    if (activeUser) {
-      localStorage.setItem(`self_tracker_data_${activeUser.id}`, JSON.stringify(newData));
-    }
+    const updatedDatasets = {
+      ...allUserDatasets,
+      [activeUser.id]: newData
+    };
+    setAllUserDatasets(updatedDatasets);
+    localStorage.setItem('self_tracker_all_user_datasets', JSON.stringify(updatedDatasets));
+    
+    // Background push to Cloud
+    pushToCloud(users, updatedDatasets);
   };
 
-  // Register New Account
+  // Register New Account (Limit up to 3 users)
   const registerUser = ({ username, password, name, role, avatarColor }) => {
     const cleanUsername = username.trim().toLowerCase();
     const cleanPassword = password.trim();
 
-    // Check if username already exists
+    if (users.length >= 3) {
+      return { success: false, message: 'Nidaamka waxaa ku jira 3-dii qof ee loogu talagalay (Limit reached)!' };
+    }
+
     const exists = users.some(u => u.username.trim().toLowerCase() === cleanUsername);
     if (exists) {
       return { success: false, message: 'Username-kan horay ayaa loo isticmaalay! Dooro Username kale.' };
@@ -99,15 +167,24 @@ export const AppProvider = ({ children }) => {
     };
 
     const updatedUsers = [...users, newUser];
-    setUsers(updatedUsers);
-    localStorage.setItem('self_tracker_registered_users', JSON.stringify(updatedUsers));
+    const updatedDatasets = {
+      ...allUserDatasets,
+      [newUser.id]: EMPTY_USER_DATA
+    };
 
+    setUsers(updatedUsers);
+    setAllUserDatasets(updatedDatasets);
     setActiveUser(newUser);
+
+    localStorage.setItem('self_tracker_registered_users', JSON.stringify(updatedUsers));
+    localStorage.setItem('self_tracker_all_user_datasets', JSON.stringify(updatedDatasets));
     localStorage.setItem('self_tracker_active_user', JSON.stringify(newUser));
-    localStorage.setItem(`self_tracker_data_${newUser.id}`, JSON.stringify(EMPTY_USER_DATA));
-    setUserData(EMPTY_USER_DATA);
 
     setIsLoginModalOpen(false);
+
+    // Sync to Cloud immediately
+    pushToCloud(updatedUsers, updatedDatasets);
+
     return { success: true };
   };
 
@@ -292,6 +369,8 @@ export const AppProvider = ({ children }) => {
         setIsLoginModalOpen,
         selectedCertificate,
         setSelectedCertificate,
+        isCloudSyncing,
+        cloudStatus,
 
         // Goal actions
         addDailyGoal,

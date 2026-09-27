@@ -6,12 +6,14 @@ import {
   UserCheck, 
   Bell, 
   Menu, 
-  PlusCircle, 
-  ShieldCheck 
+  ShieldCheck,
+  Cloud,
+  CloudLightning,
+  RefreshCw
 } from 'lucide-react';
 
 export const Header = ({ onToggleSidebar }) => {
-  const { activeUser, theme, toggleTheme, setIsLoginModalOpen, userData } = useApp();
+  const { activeUser, theme, toggleTheme, setIsLoginModalOpen, userData, isCloudSyncing, cloudStatus } = useApp();
 
   // Calculate pending reminders for notification badge
   const pendingReminders = userData.reminders ? userData.reminders.filter(r => !r.completed) : [];
@@ -30,6 +32,29 @@ export const Header = ({ onToggleSidebar }) => {
       </div>
 
       <div className="navbar-actions">
+        {/* Real-time Cloud Sync Badge */}
+        <div 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            padding: '0.3rem 0.7rem',
+            borderRadius: '999px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid var(--border-color)',
+            fontSize: '0.78rem',
+            color: 'var(--text-secondary)'
+          }}
+          title="Live Cloud Database Sync across Mobile & PC"
+        >
+          {isCloudSyncing ? (
+            <RefreshCw size={14} className="spin" style={{ color: 'var(--accent-warning)', animation: 'spin 1s linear infinite' }} />
+          ) : (
+            <Cloud size={14} style={{ color: 'var(--accent-success)' }} />
+          )}
+          <span>{isCloudSyncing ? 'Syncing...' : 'Cloud Synced'}</span>
+        </div>
+
         {/* Theme Toggle Button */}
         <button 
           className="btn-icon" 
@@ -66,7 +91,7 @@ export const Header = ({ onToggleSidebar }) => {
           </button>
         </div>
 
-        {/* User Account Switcher Button (1-3 Users) */}
+        {/* User Account Switcher Button */}
         <button 
           className="btn btn-secondary btn-sm"
           onClick={() => setIsLoginModalOpen(true)}
@@ -76,7 +101,7 @@ export const Header = ({ onToggleSidebar }) => {
             width: '24px',
             height: '24px',
             borderRadius: '50%',
-            background: activeUser.avatarColor || 'var(--accent-primary)',
+            background: activeUser ? activeUser.avatarColor : 'var(--accent-primary)',
             color: 'white',
             display: 'flex',
             alignItems: 'center',
@@ -84,9 +109,9 @@ export const Header = ({ onToggleSidebar }) => {
             fontWeight: '700',
             fontSize: '0.75rem'
           }}>
-            {activeUser.name.charAt(0)}
+            {activeUser ? activeUser.name.charAt(0) : 'U'}
           </div>
-          <span style={{ fontWeight: 600 }}>{activeUser.name}</span>
+          <span style={{ fontWeight: 600 }}>{activeUser ? activeUser.name : 'User'}</span>
           <UserCheck size={14} style={{ color: 'var(--accent-success)' }} />
         </button>
       </div>
