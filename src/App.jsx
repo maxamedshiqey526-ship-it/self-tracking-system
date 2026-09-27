@@ -1,0 +1,46 @@
+import React, { useState } from 'react';
+import { AppProvider, useApp } from './context/AppContext';
+import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
+import { Dashboard } from './components/Dashboard';
+import { GoalTracker } from './components/GoalTracker';
+import { CourseTracker } from './components/CourseTracker';
+import { CalendarReminder } from './components/CalendarReminder';
+import { LoginModal } from './components/LoginModal';
+import { CertificateModal } from './components/CertificateModal';
+
+const AppContent = () => {
+  const { activeTab } = useApp();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  return (
+    <div className="app-container">
+      {/* Sidebar Navigation */}
+      <Sidebar isOpen={sidebarOpen} />
+
+      {/* Main Body */}
+      <div className="main-content">
+        <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+        
+        <main className="content-body">
+          {activeTab === 'dashboard' && <Dashboard />}
+          {activeTab === 'goals' && <GoalTracker />}
+          {activeTab === 'courses' && <CourseTracker />}
+          {activeTab === 'calendar' && <CalendarReminder />}
+        </main>
+      </div>
+
+      {/* Global Modals */}
+      <LoginModal />
+      <CertificateModal />
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
+  );
+}
