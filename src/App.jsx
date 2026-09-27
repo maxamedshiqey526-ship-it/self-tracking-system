@@ -7,6 +7,7 @@ import { GoalTracker } from './components/GoalTracker';
 import { CourseTracker } from './components/CourseTracker';
 import { CalendarReminder } from './components/CalendarReminder';
 import { LoginModal } from './components/LoginModal';
+import { EditProfileModal } from './components/EditProfileModal';
 import { CertificateModal } from './components/CertificateModal';
 
 const AppContent = () => {
@@ -32,6 +33,7 @@ const AppContent = () => {
 
       {/* Global Modals */}
       <LoginModal />
+      <EditProfileModal />
       <CertificateModal />
     </div>
   );

@@ -6,9 +6,9 @@ const AppContext = createContext();
 const CLOUD_SYNC_ID = 'ff808181a09d98f701a0e297ec9723dc';
 const CLOUD_API_URL = `https://api.restful-api.dev/objects/${CLOUD_SYNC_ID}`;
 
-// Default starter accounts if cloud is empty
+// Default starter account (Can be renamed & password changed by user)
 const DEFAULT_ACCOUNTS = [
-  { id: 'u1', username: 'admin', password: '123', name: 'Primary User', role: 'Personal Growth Tracker', avatarColor: '#6366f1' }
+  { id: 'u1', username: 'user1', password: '123', name: 'My Profile', role: 'Personal Learner', avatarColor: '#6366f1' }
 ];
 
 const EMPTY_USER_DATA = {
@@ -51,6 +51,7 @@ export const AppProvider = ({ children }) => {
 
   // Modal Control & View States
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedCertificate, setSelectedCertificate] = useState(null);
 
@@ -77,10 +78,12 @@ export const AppProvider = ({ children }) => {
             localStorage.setItem('self_tracker_registered_users', JSON.stringify(cloudUsers));
             localStorage.setItem('self_tracker_all_user_datasets', JSON.stringify(cloudDatasets));
 
-            // Sync current active user data
-            if (activeUser && cloudDatasets[activeUser.id]) {
-              setUserData(cloudDatasets[activeUser.id]);
+            if (activeUser) {
+              const currentInCloud = cloudUsers.find(u => u.id === activeUser.id);
+              if (currentInCloud) setActiveUser(currentInCloud);
+              if (cloudDatasets[activeUser.id]) setUserData(cloudDatasets[activeUser.id]);
             }
+
             setCloudStatus('Synced');
           }
         }
@@ -126,7 +129,7 @@ export const AppProvider = ({ children }) => {
       const currentData = allUserDatasets[activeUser.id] || EMPTY_USER_DATA;
       setUserData(currentData);
     }
-  }, [activeUser, allUserDatasets]);
+  }, [activeUser]);
 
   // Save active user data changes to local & cloud
   const saveUserData = (newData) => {
@@ -139,8 +142,45 @@ export const AppProvider = ({ children }) => {
     setAllUserDatasets(updatedDatasets);
     localStorage.setItem('self_tracker_all_user_datasets', JSON.stringify(updatedDatasets));
     
-    // Background push to Cloud
     pushToCloud(users, updatedDatasets);
+  };
+
+  // Update Existing Profile (Rename, Username, Password, Role, Color)
+  const updateUserProfile = ({ name, username, password, role, avatarColor }) => {
+    if (!activeUser) return { success: false, message: 'No active profile to update!' };
+
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    // Check username collision with other users
+    const exists = users.some(u => u.id !== activeUser.id && u.username.trim().toLowerCase() === cleanUsername);
+    if (exists) {
+      return { success: false, message: 'Username-kan horay ayaa loo isticmaalay! Dooro Username kale.' };
+    }
+
+    const updatedUser = {
+      ...activeUser,
+      name: name.trim() || activeUser.name,
+      username: cleanUsername,
+      password: cleanPassword,
+      role: role.trim() || activeUser.role,
+      avatarColor: avatarColor || activeUser.avatarColor
+    };
+
+    const updatedUsers = users.map(u => u.id === activeUser.id ? updatedUser : u);
+
+    setUsers(updatedUsers);
+    setActiveUser(updatedUser);
+
+    localStorage.setItem('self_tracker_registered_users', JSON.stringify(updatedUsers));
+    localStorage.setItem('self_tracker_active_user', JSON.stringify(updatedUser));
+
+    setIsEditProfileModalOpen(false);
+
+    // Sync to Cloud immediately
+    pushToCloud(updatedUsers, allUserDatasets);
+
+    return { success: true };
   };
 
   // Register New Account (Limit up to 3 users)
@@ -358,6 +398,7 @@ export const AppProvider = ({ children }) => {
         users,
         activeUser,
         registerUser,
+        updateUserProfile,
         loginUser,
         switchUser,
         theme,
@@ -367,6 +408,8 @@ export const AppProvider = ({ children }) => {
         setActiveTab,
         isLoginModalOpen,
         setIsLoginModalOpen,
+        isEditProfileModalOpen,
+        setIsEditProfileModalOpen,
         selectedCertificate,
         setSelectedCertificate,
         isCloudSyncing,

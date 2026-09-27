@@ -8,12 +8,19 @@ import {
   Menu, 
   ShieldCheck,
   Cloud,
-  CloudLightning,
-  RefreshCw
+  Edit3
 } from 'lucide-react';
 
 export const Header = ({ onToggleSidebar }) => {
-  const { activeUser, theme, toggleTheme, setIsLoginModalOpen, userData, isCloudSyncing, cloudStatus } = useApp();
+  const { 
+    activeUser, 
+    theme, 
+    toggleTheme, 
+    setIsLoginModalOpen, 
+    setIsEditProfileModalOpen, 
+    userData, 
+    isCloudSyncing 
+  } = useApp();
 
   // Calculate pending reminders for notification badge
   const pendingReminders = userData.reminders ? userData.reminders.filter(r => !r.completed) : [];
@@ -47,11 +54,7 @@ export const Header = ({ onToggleSidebar }) => {
           }}
           title="Live Cloud Database Sync across Mobile & PC"
         >
-          {isCloudSyncing ? (
-            <RefreshCw size={14} className="spin" style={{ color: 'var(--accent-warning)', animation: 'spin 1s linear infinite' }} />
-          ) : (
-            <Cloud size={14} style={{ color: 'var(--accent-success)' }} />
-          )}
+          <Cloud size={14} style={{ color: 'var(--accent-success)' }} />
           <span>{isCloudSyncing ? 'Syncing...' : 'Cloud Synced'}</span>
         </div>
 
@@ -64,34 +67,16 @@ export const Header = ({ onToggleSidebar }) => {
           {theme === 'dark' ? <Sun size={18} color="#f59e0b" /> : <Moon size={18} color="#6366f1" />}
         </button>
 
-        {/* Notifications Icon with Badge */}
-        <div style={{ position: 'relative' }}>
-          <button className="btn-icon" title="Reminders & Notifications">
-            <Bell size={18} />
-            {pendingReminders.length > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '-4px',
-                right: '-4px',
-                background: 'var(--accent-danger)',
-                color: 'white',
-                fontSize: '0.7rem',
-                fontWeight: '700',
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 6px rgba(239, 68, 68, 0.5)'
-              }}>
-                {pendingReminders.length}
-              </span>
-            )}
-          </button>
-        </div>
+        {/* Edit Profile Button */}
+        <button 
+          className="btn-icon"
+          onClick={() => setIsEditProfileModalOpen(true)}
+          title="Edit Profile (Badal Magacaaga/Password-ka)"
+        >
+          <Edit3 size={17} color="var(--accent-primary)" />
+        </button>
 
-        {/* User Account Switcher Button */}
+        {/* Account Switcher Button */}
         <button 
           className="btn btn-secondary btn-sm"
           onClick={() => setIsLoginModalOpen(true)}
