@@ -4,7 +4,7 @@ const AppContext = createContext();
 
 // Default starter accounts if none exist in localStorage
 const DEFAULT_ACCOUNTS = [
-  { id: 'u1', username: 'user1', password: '123', name: 'User One', role: 'Personal Growth Tracker', avatarColor: '#6366f1' }
+  { id: 'u1', username: 'admin', password: '123', name: 'Primary User', role: 'Personal Growth Tracker', avatarColor: '#6366f1' }
 ];
 
 // Clean empty initial data structure for new user accounts
@@ -20,7 +20,7 @@ export const AppProvider = ({ children }) => {
   // Theme state
   const [theme, setTheme] = useState(() => localStorage.getItem('self_tracker_theme') || 'dark');
   
-  // Registered Accounts State (Up to 3 Users)
+  // Registered Accounts State
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('self_tracker_registered_users');
     return saved ? JSON.parse(saved) : DEFAULT_ACCOUNTS;
@@ -51,7 +51,7 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('self_tracker_theme', theme);
   }, [theme]);
 
-  // Persist registered users list
+  // Persist registered users list immediately
   useEffect(() => {
     localStorage.setItem('self_tracker_registered_users', JSON.stringify(users));
   }, [users]);
@@ -78,40 +78,46 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Register New Account (Limit up to 3 users)
+  // Register New Account
   const registerUser = ({ username, password, name, role, avatarColor }) => {
-    if (users.length >= 3) {
-      return { success: false, message: 'Max 3 users allowed on this system!' };
-    }
-    
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
     // Check if username already exists
-    const exists = users.some(u => u.username.toLowerCase() === username.toLowerCase());
+    const exists = users.some(u => u.username.trim().toLowerCase() === cleanUsername);
     if (exists) {
-      return { success: false, message: 'Username-kan horay ayaa loo isticmaalay!' };
+      return { success: false, message: 'Username-kan horay ayaa loo isticmaalay! Dooro Username kale.' };
     }
 
     const newUser = {
       id: 'u_' + Date.now(),
-      username,
-      password,
-      name: name || username,
-      role: role || 'Personal Learner',
+      username: cleanUsername,
+      password: cleanPassword,
+      name: name.trim() || cleanUsername,
+      role: role.trim() || 'Personal Learner',
       avatarColor: avatarColor || '#6366f1'
     };
 
     const updatedUsers = [...users, newUser];
     setUsers(updatedUsers);
-    setActiveUser(newUser);
-    saveUserData(EMPTY_USER_DATA);
-    setIsLoginModalOpen(false);
+    localStorage.setItem('self_tracker_registered_users', JSON.stringify(updatedUsers));
 
+    setActiveUser(newUser);
+    localStorage.setItem('self_tracker_active_user', JSON.stringify(newUser));
+    localStorage.setItem(`self_tracker_data_${newUser.id}`, JSON.stringify(EMPTY_USER_DATA));
+    setUserData(EMPTY_USER_DATA);
+
+    setIsLoginModalOpen(false);
     return { success: true };
   };
 
   // Authenticate / Login User with Username & Password
   const loginUser = (username, password) => {
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
     const found = users.find(
-      u => u.username.toLowerCase() === username.toLowerCase() && u.password === password
+      u => u.username.trim().toLowerCase() === cleanUsername && u.password.trim() === cleanPassword
     );
 
     if (found) {
@@ -119,7 +125,7 @@ export const AppProvider = ({ children }) => {
       setIsLoginModalOpen(false);
       return { success: true };
     } else {
-      return { success: false, message: 'Username ama Password-ka aad gelisay waa xaqiiqdaro!' };
+      return { success: false, message: 'Username ama Password-ka aad gelisay waa xaqiiqdaro! Hubi amase Sign Up samayso.' };
     }
   };
 
