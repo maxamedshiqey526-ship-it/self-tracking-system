@@ -25,6 +25,9 @@ export const AppProvider = ({ children }) => {
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
   const [cloudStatus, setCloudStatus] = useState('Online');
 
+  // Authentication Session State (Force Login Screen first on page load)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   // Registered Accounts State
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('self_tracker_registered_users');
@@ -177,7 +180,6 @@ export const AppProvider = ({ children }) => {
 
     setIsEditProfileModalOpen(false);
 
-    // Sync to Cloud immediately
     pushToCloud(updatedUsers, allUserDatasets);
 
     return { success: true };
@@ -215,6 +217,7 @@ export const AppProvider = ({ children }) => {
     setUsers(updatedUsers);
     setAllUserDatasets(updatedDatasets);
     setActiveUser(newUser);
+    setIsLoggedIn(true); // Authenticate session
 
     localStorage.setItem('self_tracker_registered_users', JSON.stringify(updatedUsers));
     localStorage.setItem('self_tracker_all_user_datasets', JSON.stringify(updatedDatasets));
@@ -222,7 +225,6 @@ export const AppProvider = ({ children }) => {
 
     setIsLoginModalOpen(false);
 
-    // Sync to Cloud immediately
     pushToCloud(updatedUsers, updatedDatasets);
 
     return { success: true };
@@ -239,6 +241,7 @@ export const AppProvider = ({ children }) => {
 
     if (found) {
       setActiveUser(found);
+      setIsLoggedIn(true); // Authenticate session
       setIsLoginModalOpen(false);
       return { success: true };
     } else {
@@ -246,9 +249,15 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Logout User Session
+  const logoutUser = () => {
+    setIsLoggedIn(false);
+  };
+
   // Switch Active User
   const switchUser = (user) => {
     setActiveUser(user);
+    setIsLoggedIn(true);
     setIsLoginModalOpen(false);
   };
 
@@ -397,9 +406,11 @@ export const AppProvider = ({ children }) => {
       value={{
         users,
         activeUser,
+        isLoggedIn,
+        loginUser,
+        logoutUser,
         registerUser,
         updateUserProfile,
-        loginUser,
         switchUser,
         theme,
         toggleTheme,

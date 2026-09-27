@@ -8,7 +8,8 @@ import {
   Menu, 
   ShieldCheck,
   Cloud,
-  Edit3
+  Edit3,
+  LogOut
 } from 'lucide-react';
 
 export const Header = ({ onToggleSidebar }) => {
@@ -18,6 +19,7 @@ export const Header = ({ onToggleSidebar }) => {
     toggleTheme, 
     setIsLoginModalOpen, 
     setIsEditProfileModalOpen, 
+    logoutUser,
     userData, 
     isCloudSyncing 
   } = useApp();
@@ -98,6 +100,16 @@ export const Header = ({ onToggleSidebar }) => {
           </div>
           <span style={{ fontWeight: 600 }}>{activeUser ? activeUser.name : 'User'}</span>
           <UserCheck size={14} style={{ color: 'var(--accent-success)' }} />
+        </button>
+
+        {/* Logout Button */}
+        <button 
+          className="btn btn-danger btn-sm"
+          onClick={logoutUser}
+          title="Log out and return to Login Screen"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+        >
+          <LogOut size={15} /> Log Out
         </button>
       </div>
     </header>

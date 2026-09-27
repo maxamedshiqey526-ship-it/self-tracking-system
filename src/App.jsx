@@ -6,13 +6,19 @@ import { Dashboard } from './components/Dashboard';
 import { GoalTracker } from './components/GoalTracker';
 import { CourseTracker } from './components/CourseTracker';
 import { CalendarReminder } from './components/CalendarReminder';
+import { LoginPage } from './components/LoginPage';
 import { LoginModal } from './components/LoginModal';
 import { EditProfileModal } from './components/EditProfileModal';
 import { CertificateModal } from './components/CertificateModal';
 
 const AppContent = () => {
-  const { activeTab } = useApp();
+  const { activeTab, isLoggedIn } = useApp();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // If not logged in, render Full-Page Login Portal
+  if (!isLoggedIn) {
+    return <LoginPage />;
+  }
 
   return (
     <div className="app-container">
