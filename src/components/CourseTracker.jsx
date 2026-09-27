@@ -5,12 +5,10 @@ import {
   Award, 
   Plus, 
   Upload, 
-  ExternalLink, 
   CheckCircle2, 
-  BookOpen, 
   Trash2, 
   Eye, 
-  FileCheck,
+  ArrowLeft,
   X 
 } from 'lucide-react';
 
@@ -21,7 +19,8 @@ export const CourseTracker = () => {
     updateCourseProgress, 
     uploadCertificate, 
     deleteCourse,
-    setSelectedCertificate 
+    setSelectedCertificate,
+    setActiveTab
   } = useApp();
 
   const [isAddCourseModal, setIsAddCourseModal] = useState(false);
@@ -84,6 +83,15 @@ export const CourseTracker = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+      {/* Navigation Breadcrumb Back Button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('dashboard')}>
+          <ArrowLeft size={16} /> Dashboard
+        </button>
+        <span style={{ color: 'var(--text-muted)' }}>/</span>
+        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Courses & Certificates</span>
+      </div>
+
       {/* Header Banner */}
       <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>

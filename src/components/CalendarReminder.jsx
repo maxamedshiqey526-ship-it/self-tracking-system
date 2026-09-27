@@ -6,15 +6,13 @@ import {
   Plus, 
   ChevronLeft, 
   ChevronRight, 
-  Clock, 
-  CheckCircle2, 
   Trash2, 
-  AlertTriangle,
+  ArrowLeft,
   X 
 } from 'lucide-react';
 
 export const CalendarReminder = () => {
-  const { userData, addReminder, toggleReminder, deleteReminder } = useApp();
+  const { userData, addReminder, toggleReminder, deleteReminder, setActiveTab } = useApp();
 
   const [currentDate, setCurrentDate] = useState(new Date(2026, 8, 1)); // September 2026
   const [selectedDay, setSelectedDay] = useState(28);
@@ -30,7 +28,6 @@ export const CalendarReminder = () => {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  // Helper functions for calendar rendering
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayIndex = new Date(year, month, 1).getDay();
 
@@ -65,7 +62,6 @@ export const CalendarReminder = () => {
 
   const reminders = userData.reminders || [];
 
-  // Match reminders for a given calendar day
   const getRemindersForDay = (dayNum) => {
     const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
     return reminders.filter(r => r.date === formattedDate);
@@ -73,6 +69,15 @@ export const CalendarReminder = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+      {/* Navigation Breadcrumb Back Button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('dashboard')}>
+          <ArrowLeft size={16} /> Dashboard
+        </button>
+        <span style={{ color: 'var(--text-muted)' }}>/</span>
+        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Calendar & Goal Reminders</span>
+      </div>
+
       {/* Header Banner */}
       <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -93,7 +98,6 @@ export const CalendarReminder = () => {
       <div className="grid-2" style={{ gridTemplateColumns: '1.3fr 1fr' }}>
         {/* Left Column: Interactive Calendar Grid */}
         <div className="card">
-          {/* Calendar Month Selector Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem', fontWeight: 700 }}>
               {monthNames[month]} {year}
@@ -109,7 +113,6 @@ export const CalendarReminder = () => {
             </div>
           </div>
 
-          {/* Days of Week Header */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
             <div>Sun</div>
             <div>Mon</div>
@@ -120,14 +123,11 @@ export const CalendarReminder = () => {
             <div>Sat</div>
           </div>
 
-          {/* Days Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>
-            {/* Empty slots for previous month overflow */}
             {Array.from({ length: firstDayIndex }).map((_, i) => (
               <div key={`empty-${i}`} style={{ height: '70px', opacity: 0.2 }} />
             ))}
 
-            {/* Calendar Days */}
             {Array.from({ length: daysInMonth }).map((_, i) => {
               const dayNum = i + 1;
               const isSelected = dayNum === selectedDay;

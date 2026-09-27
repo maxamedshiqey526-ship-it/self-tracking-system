@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { ShieldCheck, LogIn, UserPlus, User, Lock, Sparkles, CheckCircle2, Shield } from 'lucide-react';
+import { ShieldCheck, LogIn, UserPlus, User, Lock, Shield } from 'lucide-react';
 
 export const LoginPage = () => {
   const { users, loginUser, registerUser } = useApp();
@@ -107,9 +107,8 @@ export const LoginPage = () => {
             className={`tab-button ${mode === 'signup' ? 'active' : ''}`}
             onClick={() => { setMode('signup'); setErrorMsg(''); }}
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
-            disabled={users.length >= 3}
           >
-            <UserPlus size={15} /> Sign Up {users.length >= 3 && '(3/3 Max)'}
+            <UserPlus size={15} /> Sign Up (Create Account)
           </button>
         </div>
 

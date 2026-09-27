@@ -2,15 +2,10 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   Target, 
-  Calendar as CalendarIcon, 
-  Clock, 
   Plus, 
-  CheckCircle2, 
   Trash2, 
-  Sparkles,
-  TrendingUp,
   Award,
-  Layers,
+  ArrowLeft,
   X
 } from 'lucide-react';
 
@@ -25,7 +20,8 @@ export const GoalTracker = () => {
     deleteMonthlyGoal,
     addYearlyGoal,
     toggleYearlyGoal,
-    deleteYearlyGoal
+    deleteYearlyGoal,
+    setActiveTab
   } = useApp();
 
   const [activeSubTab, setActiveSubTab] = useState('daily'); // 'daily', 'monthly', 'yearly'
@@ -54,7 +50,6 @@ export const GoalTracker = () => {
       addYearlyGoal({ title: goalTitle, year, vision, quarter });
     }
 
-    // Reset Form & Close Modal
     setGoalTitle('');
     setVision('');
     setIsModalOpen(false);
@@ -62,6 +57,15 @@ export const GoalTracker = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Navigation Breadcrumb Back Button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('dashboard')}>
+          <ArrowLeft size={16} /> Dashboard
+        </button>
+        <span style={{ color: 'var(--text-muted)' }}>/</span>
+        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Goal Management</span>
+      </div>
+
       {/* Header Banner */}
       <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -107,7 +111,7 @@ export const GoalTracker = () => {
       {/* 1. DAILY GOALS TAB */}
       {activeSubTab === 'daily' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {userData.dailyGoals.length === 0 ? (
+          {(!userData.dailyGoals || userData.dailyGoals.length === 0) ? (
             <div className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
               Wax yool ah maanta weli ma aadan ku darin.
             </div>
@@ -165,7 +169,7 @@ export const GoalTracker = () => {
       {/* 2. MONTHLY GOALS TAB */}
       {activeSubTab === 'monthly' && (
         <div className="grid-2">
-          {userData.monthlyGoals.length === 0 ? (
+          {(!userData.monthlyGoals || userData.monthlyGoals.length === 0) ? (
             <div className="card" style={{ gridColumn: 'span 2', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
               Wax yool bisha ah weli ma ku jiraan.
             </div>
@@ -219,7 +223,7 @@ export const GoalTracker = () => {
       {/* 3. YEARLY GOALS TAB */}
       {activeSubTab === 'yearly' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {userData.yearlyGoals.length === 0 ? (
+          {(!userData.yearlyGoals || userData.yearlyGoals.length === 0) ? (
             <div className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
               Wax yool sanadeed ah weli ma jiraan.
             </div>

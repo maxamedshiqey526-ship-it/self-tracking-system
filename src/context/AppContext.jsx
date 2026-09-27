@@ -6,9 +6,9 @@ const AppContext = createContext();
 const CLOUD_SYNC_ID = 'ff808181a09d98f701a0e297ec9723dc';
 const CLOUD_API_URL = `https://api.restful-api.dev/objects/${CLOUD_SYNC_ID}`;
 
-// Default starter account (Can be renamed & password changed by user)
+// Default starter accounts if cloud is empty
 const DEFAULT_ACCOUNTS = [
-  { id: 'u1', username: 'user1', password: '123', name: 'My Profile', role: 'Personal Learner', avatarColor: '#6366f1' }
+  { id: 'u1', username: 'admin', password: '123', name: 'Primary User', role: 'Personal Learner', avatarColor: '#6366f1' }
 ];
 
 const EMPTY_USER_DATA = {
@@ -25,19 +25,23 @@ export const AppProvider = ({ children }) => {
   const [isCloudSyncing, setIsCloudSyncing] = useState(false);
   const [cloudStatus, setCloudStatus] = useState('Online');
 
-  // Authentication Session State (Force Login Screen first on page load)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Registered Accounts State
+  // Registered Accounts State (Unlimited Multi-User Support)
   const [users, setUsers] = useState(() => {
     const saved = localStorage.getItem('self_tracker_registered_users');
     return saved ? JSON.parse(saved) : DEFAULT_ACCOUNTS;
   });
 
-  // Active Logged-in User State
+  // Active Logged-in User Session State
   const [activeUser, setActiveUser] = useState(() => {
-    const saved = localStorage.getItem('self_tracker_active_user');
-    return saved ? JSON.parse(saved) : (users[0] || DEFAULT_ACCOUNTS[0]);
+    const savedSession = localStorage.getItem('self_tracker_active_session');
+    if (savedSession) {
+      try { return JSON.parse(savedSession); } catch(e) {}
+    }
+    return null; // Force Login Page first if no active session
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return !!localStorage.getItem('self_tracker_active_session');
   });
 
   // User Datasets map: { [userId]: userData }
@@ -48,8 +52,8 @@ export const AppProvider = ({ children }) => {
 
   // Active User Data
   const [userData, setUserData] = useState(() => {
-    const userId = activeUser ? activeUser.id : 'u1';
-    return allUserDatasets[userId] || EMPTY_USER_DATA;
+    const userId = activeUser ? activeUser.id : null;
+    return userId && allUserDatasets[userId] ? allUserDatasets[userId] : EMPTY_USER_DATA;
   });
 
   // Modal Control & View States
@@ -128,11 +132,13 @@ export const AppProvider = ({ children }) => {
   // Load user data when active user changes
   useEffect(() => {
     if (activeUser) {
-      localStorage.setItem('self_tracker_active_user', JSON.stringify(activeUser));
+      localStorage.setItem('self_tracker_active_session', JSON.stringify(activeUser));
       const currentData = allUserDatasets[activeUser.id] || EMPTY_USER_DATA;
       setUserData(currentData);
+    } else {
+      localStorage.removeItem('self_tracker_active_session');
     }
-  }, [activeUser]);
+  }, [activeUser, allUserDatasets]);
 
   // Save active user data changes to local & cloud
   const saveUserData = (newData) => {
@@ -148,14 +154,13 @@ export const AppProvider = ({ children }) => {
     pushToCloud(users, updatedDatasets);
   };
 
-  // Update Existing Profile (Rename, Username, Password, Role, Color)
+  // Update Existing Profile
   const updateUserProfile = ({ name, username, password, role, avatarColor }) => {
     if (!activeUser) return { success: false, message: 'No active profile to update!' };
 
     const cleanUsername = username.trim().toLowerCase();
     const cleanPassword = password.trim();
 
-    // Check username collision with other users
     const exists = users.some(u => u.id !== activeUser.id && u.username.trim().toLowerCase() === cleanUsername);
     if (exists) {
       return { success: false, message: 'Username-kan horay ayaa loo isticmaalay! Dooro Username kale.' };
@@ -176,7 +181,7 @@ export const AppProvider = ({ children }) => {
     setActiveUser(updatedUser);
 
     localStorage.setItem('self_tracker_registered_users', JSON.stringify(updatedUsers));
-    localStorage.setItem('self_tracker_active_user', JSON.stringify(updatedUser));
+    localStorage.setItem('self_tracker_active_session', JSON.stringify(updatedUser));
 
     setIsEditProfileModalOpen(false);
 
@@ -185,14 +190,10 @@ export const AppProvider = ({ children }) => {
     return { success: true };
   };
 
-  // Register New Account (Limit up to 3 users)
+  // Register New Account (Production Real System: Unlimited Users)
   const registerUser = ({ username, password, name, role, avatarColor }) => {
     const cleanUsername = username.trim().toLowerCase();
     const cleanPassword = password.trim();
-
-    if (users.length >= 3) {
-      return { success: false, message: 'Nidaamka waxaa ku jira 3-dii qof ee loogu talagalay (Limit reached)!' };
-    }
 
     const exists = users.some(u => u.username.trim().toLowerCase() === cleanUsername);
     if (exists) {
@@ -217,11 +218,11 @@ export const AppProvider = ({ children }) => {
     setUsers(updatedUsers);
     setAllUserDatasets(updatedDatasets);
     setActiveUser(newUser);
-    setIsLoggedIn(true); // Authenticate session
+    setIsLoggedIn(true);
 
     localStorage.setItem('self_tracker_registered_users', JSON.stringify(updatedUsers));
     localStorage.setItem('self_tracker_all_user_datasets', JSON.stringify(updatedDatasets));
-    localStorage.setItem('self_tracker_active_user', JSON.stringify(newUser));
+    localStorage.setItem('self_tracker_active_session', JSON.stringify(newUser));
 
     setIsLoginModalOpen(false);
 
@@ -241,7 +242,8 @@ export const AppProvider = ({ children }) => {
 
     if (found) {
       setActiveUser(found);
-      setIsLoggedIn(true); // Authenticate session
+      setIsLoggedIn(true);
+      localStorage.setItem('self_tracker_active_session', JSON.stringify(found));
       setIsLoginModalOpen(false);
       return { success: true };
     } else {
@@ -251,13 +253,16 @@ export const AppProvider = ({ children }) => {
 
   // Logout User Session
   const logoutUser = () => {
+    setActiveUser(null);
     setIsLoggedIn(false);
+    localStorage.removeItem('self_tracker_active_session');
   };
 
   // Switch Active User
   const switchUser = (user) => {
     setActiveUser(user);
     setIsLoggedIn(true);
+    localStorage.setItem('self_tracker_active_session', JSON.stringify(user));
     setIsLoginModalOpen(false);
   };
 
