@@ -536,7 +536,24 @@ input, select, textarea {
   gap: 1.5rem;
 }
 
+.mobile-menu-btn {
+  display: none;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 45;
+  animation: fadeIn 0.2s ease;
+}
+
 @media (max-width: 1024px) {
+  .mobile-menu-btn {
+    display: inline-flex !important;
+  }
+
   .grid-3, .grid-2 {
     grid-template-columns: 1fr;
   }
@@ -546,10 +563,20 @@ input, select, textarea {
     left: 0;
     top: 0;
     bottom: 0;
+    height: 100vh;
     transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
   }
 
   .sidebar.open {
     transform: translateX(0);
+  }
+
+  .content-body {
+    padding: 1.25rem;
+  }
+
+  .navbar {
+    padding: 0 1rem;
   }
 }

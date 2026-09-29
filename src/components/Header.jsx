@@ -25,12 +25,16 @@ export const Header = ({ onToggleSidebar }) => {
   } = useApp();
 
   // Calculate pending reminders for notification badge
-  const pendingReminders = userData.reminders ? userData.reminders.filter(r => !r.completed) : [];
+  const pendingReminders = userData?.reminders ? userData.reminders.filter(r => !r.completed) : [];
 
   return (
     <header className="navbar">
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <button className="btn-icon mobile-menu-btn" onClick={onToggleSidebar} style={{ display: 'none' }}>
+        <button 
+          className="btn-icon mobile-menu-btn" 
+          onClick={onToggleSidebar} 
+          title="Open Menu"
+        >
           <Menu size={20} />
         </button>
         
@@ -88,7 +92,7 @@ export const Header = ({ onToggleSidebar }) => {
             width: '24px',
             height: '24px',
             borderRadius: '50%',
-            background: activeUser ? activeUser.avatarColor : 'var(--accent-primary)',
+            background: activeUser?.avatarColor || 'var(--accent-primary)',
             color: 'white',
             display: 'flex',
             alignItems: 'center',
@@ -96,9 +100,9 @@ export const Header = ({ onToggleSidebar }) => {
             fontWeight: '700',
             fontSize: '0.75rem'
           }}>
-            {activeUser ? activeUser.name.charAt(0) : 'U'}
+            {activeUser?.name?.charAt(0) || 'U'}
           </div>
-          <span style={{ fontWeight: 600 }}>{activeUser ? activeUser.name : 'User'}</span>
+          <span style={{ fontWeight: 600 }}>{activeUser?.name || 'User'}</span>
           <UserCheck size={14} style={{ color: 'var(--accent-success)' }} />
         </button>
 

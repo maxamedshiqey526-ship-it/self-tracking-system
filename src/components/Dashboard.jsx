@@ -11,7 +11,9 @@ import {
   Plus, 
   Clock, 
   ArrowRight,
-  ExternalLink
+  ExternalLink,
+  BookOpen,
+  CalendarCheck
 } from 'lucide-react';
 
 export const Dashboard = () => {
@@ -23,10 +25,10 @@ export const Dashboard = () => {
     setSelectedCertificate 
   } = useApp();
 
-  const dailyGoals = userData.dailyGoals || [];
-  const monthlyGoals = userData.monthlyGoals || [];
-  const courses = userData.courses || [];
-  const reminders = userData.reminders || [];
+  const dailyGoals = userData?.dailyGoals || [];
+  const monthlyGoals = userData?.monthlyGoals || [];
+  const courses = userData?.courses || [];
+  const reminders = userData?.reminders || [];
 
   // Calculations
   const completedDaily = dailyGoals.filter(g => g.completed).length;
@@ -56,17 +58,17 @@ export const Dashboard = () => {
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-warning)', fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.4rem' }}>
-            <Flame size={18} /> Daily Streak: 5 Days Active
+            <Flame size={18} /> Daily Streak: Active
           </div>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            Kusoo dhawaow, {activeUser.name}! 👋
+            Kusoo dhawaow, {activeUser?.name || 'Saxiib'}! 👋
           </h1>
           <p style={{ color: 'var(--text-secondary)', marginTop: '0.3rem', maxWidth: '600px', fontSize: '0.95rem' }}>
-            Kala raca yoolalkaaga maanta, koorsooyinkaaga, iyo shahadooyinkaaga. Waxaad maanta dhameysay <strong>{dailyProgressPercent}%</strong> yoolalkaaga!
+            Kala soco yoolalkaaga maanta, koorsooyinkaaga, iyo shahadooyinkaaga. Waxaad maanta dhameysay <strong>{dailyProgressPercent}%</strong> yoolalkaaga!
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
           <button className="btn btn-primary" onClick={() => setActiveTab('goals')}>
             <Target size={18} /> Manage Goals
           </button>
@@ -84,7 +86,7 @@ export const Dashboard = () => {
           </div>
           <div>
             <div className="stat-value">{completedDaily} / {totalDaily}</div>
-            <div className="stat-label">Daily Goals Today ({dailyProgressPercent}%)</div>
+            <div className="stat-label">Daily Goals ({dailyProgressPercent}%)</div>
           </div>
         </div>
 
@@ -139,8 +141,17 @@ export const Dashboard = () => {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {dailyGoals.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                Yoolal cusub weli ma aadan ku darin maanta.
+              <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
+                <Target size={36} style={{ color: 'var(--accent-primary)', opacity: 0.5, marginBottom: '0.75rem' }} />
+                <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+                  Weli yoolal ma aadan ku darin maanta
+                </div>
+                <div style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  Kala soco hawlahaaga maalinlaha ah adoo ku daraya yool cusub.
+                </div>
+                <button className="btn btn-primary btn-sm" onClick={() => setActiveTab('goals')}>
+                  <Plus size={15} /> Ku Dar Yoolka Maanta
+                </button>
               </div>
             ) : (
               dailyGoals.slice(0, 5).map((goal) => (
@@ -203,47 +214,62 @@ export const Dashboard = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {courses.map(course => (
-              <div 
-                key={course.id}
-                style={{
-                  padding: '1rem',
-                  borderRadius: 'var(--radius-md)',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid var(--border-color)'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <div>
-                    <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>{course.title}</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{course.platform} • {course.hours} Hours</div>
-                  </div>
-                  <span className={`pill ${course.status === 'Completed' ? 'pill-completed' : 'pill-in-progress'}`}>
-                    {course.status}
-                  </span>
+            {courses.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
+                <BookOpen size={36} style={{ color: 'var(--accent-secondary)', opacity: 0.5, marginBottom: '0.75rem' }} />
+                <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+                  Weli koorso kuma jiro
                 </div>
-
-                <div style={{ margin: '0.5rem 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>
-                    <span>Progress</span>
-                    <span>{course.progress}%</span>
-                  </div>
-                  <div className="progress-bar-container">
-                    <div className="progress-bar-fill" style={{ width: `${course.progress}%` }} />
-                  </div>
+                <div style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  Ku dar koorsooyinka aad waddo si aad u raad-raacdo una keydsato shahadada.
                 </div>
-
-                {course.certificate && (
-                  <button 
-                    className="btn btn-secondary btn-sm" 
-                    onClick={() => setSelectedCertificate(course.certificate)}
-                    style={{ marginTop: '0.5rem', width: '100%', fontSize: '0.8rem', color: 'var(--accent-warning)', borderColor: 'rgba(245, 158, 11, 0.3)' }}
-                  >
-                    <Award size={14} /> Eeg Shahadada (View Certificate)
-                  </button>
-                )}
+                <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('courses')}>
+                  <Plus size={15} /> Ku Dar Koorso
+                </button>
               </div>
-            ))}
+            ) : (
+              courses.map(course => (
+                <div 
+                  key={course.id}
+                  style={{
+                    padding: '1rem',
+                    borderRadius: 'var(--radius-md)',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid var(--border-color)'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                    <div>
+                      <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>{course.title}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{course.platform} • {course.hours} Hours</div>
+                    </div>
+                    <span className={`pill ${course.status === 'Completed' ? 'pill-completed' : 'pill-in-progress'}`}>
+                      {course.status}
+                    </span>
+                  </div>
+
+                  <div style={{ margin: '0.5rem 0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>
+                      <span>Progress</span>
+                      <span>{course.progress}%</span>
+                    </div>
+                    <div className="progress-bar-container">
+                      <div className="progress-bar-fill" style={{ width: `${course.progress}%` }} />
+                    </div>
+                  </div>
+
+                  {course.certificate && (
+                    <button 
+                      className="btn btn-secondary btn-sm" 
+                      onClick={() => setSelectedCertificate(course.certificate)}
+                      style={{ marginTop: '0.5rem', width: '100%', fontSize: '0.8rem', color: 'var(--accent-warning)', borderColor: 'rgba(245, 158, 11, 0.3)' }}
+                    >
+                      <Award size={14} /> Eeg Shahadada (View Certificate)
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -262,7 +288,10 @@ export const Dashboard = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
           {reminders.length === 0 ? (
-            <div style={{ color: 'var(--text-muted)', padding: '1rem' }}>Maya jiro xusuusiyo dhaw.</div>
+            <div style={{ color: 'var(--text-muted)', padding: '1.5rem', textAlign: 'center', gridColumn: '1 / -1' }}>
+              <CalendarCheck size={28} style={{ opacity: 0.5, marginBottom: '0.5rem' }} />
+              <div>Maya jiro xusuusiyo dhaw. Ku dar xusuusiye cusub kalandarkaaga!</div>
+            </div>
           ) : (
             reminders.slice(0, 3).map(rem => (
               <div 

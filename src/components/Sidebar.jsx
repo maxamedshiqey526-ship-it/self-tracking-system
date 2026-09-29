@@ -7,10 +7,11 @@ import {
   Calendar, 
   Users, 
   Award,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 
-export const Sidebar = ({ isOpen }) => {
+export const Sidebar = ({ isOpen, onClose }) => {
   const { activeTab, setActiveTab, activeUser, setIsLoginModalOpen } = useApp();
 
   const navItems = [
@@ -20,14 +21,31 @@ export const Sidebar = ({ isOpen }) => {
     { id: 'calendar', label: 'Calendar & Reminders', icon: Calendar, tag: 'Schedule' }
   ];
 
+  const handleNavClick = (id) => {
+    setActiveTab(id);
+    if (onClose) onClose();
+  };
+
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-      <div className="sidebar-header">
-        <Sparkles size={22} style={{ color: 'var(--accent-secondary)' }} />
-        <div>
-          <div style={{ fontWeight: '700', fontSize: '1rem', color: 'var(--text-primary)' }}>Personal Growth</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Self-Tracking Platform</div>
+      <div className="sidebar-header" style={{ justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <Sparkles size={22} style={{ color: 'var(--accent-secondary)' }} />
+          <div>
+            <div style={{ fontWeight: '700', fontSize: '1rem', color: 'var(--text-primary)' }}>Personal Growth</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Self-Tracking Platform</div>
+          </div>
         </div>
+        {onClose && (
+          <button 
+            className="btn-icon mobile-menu-btn" 
+            onClick={onClose}
+            style={{ width: '32px', height: '32px' }}
+            title="Close menu"
+          >
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       <nav className="sidebar-nav">
@@ -38,7 +56,7 @@ export const Sidebar = ({ isOpen }) => {
             <button
               key={item.id}
               className={`nav-item ${isActive ? 'active' : ''}`}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => handleNavClick(item.id)}
             >
               <Icon size={19} />
               <span style={{ flex: 1 }}>{item.label}</span>
@@ -59,19 +77,26 @@ export const Sidebar = ({ isOpen }) => {
       </nav>
 
       {/* User Switcher Card at Sidebar Bottom */}
-      <div className="user-profile-badge" style={{ cursor: 'pointer' }} onClick={() => setIsLoginModalOpen(true)}>
+      <div 
+        className="user-profile-badge" 
+        style={{ cursor: 'pointer' }} 
+        onClick={() => {
+          setIsLoginModalOpen(true);
+          if (onClose) onClose();
+        }}
+      >
         <div 
           className="user-avatar" 
-          style={{ background: activeUser.avatarColor || 'var(--accent-primary)' }}
+          style={{ background: activeUser?.avatarColor || 'var(--accent-primary)' }}
         >
-          {activeUser.name.charAt(0)}
+          {activeUser?.name?.charAt(0) || 'U'}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: '600', fontSize: '0.875rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {activeUser.name}
+            {activeUser?.name || 'User Profile'}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {activeUser.role}
+            {activeUser?.role || 'Personal Learner'}
           </div>
         </div>
         <Users size={16} style={{ color: 'var(--text-secondary)' }} />
