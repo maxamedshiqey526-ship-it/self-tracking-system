@@ -59,7 +59,7 @@ export const Dashboard = () => {
             <Flame size={15} /> Continuous Progress
           </div>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-            Kusoo dhawaada, {activeUser?.name || 'Saxiib'}
+            Soo dhawaw, {activeUser?.name || 'Saxiib'}
           </h1>
           <p style={{ color: 'var(--text-secondary)', marginTop: '0.3rem', maxWidth: '600px', fontSize: '0.925rem' }}>
             Kala soco yoolalkaaga maanta, koorsooyinkaaga, iyo shahadooyinkaaga. Waxaad maanta dhameysay <strong>{dailyProgressPercent}%</strong> yoolalkaaga maanta.
