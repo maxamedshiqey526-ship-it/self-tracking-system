@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { ShieldCheck, LogIn, UserPlus, User, Lock, Shield, Target, GraduationCap, Calendar, Award, Sparkles, ArrowRight } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  LogIn, 
+  UserPlus, 
+  User, 
+  Lock, 
+  Shield, 
+  Target, 
+  GraduationCap, 
+  Calendar, 
+  Award, 
+  ArrowRight,
+  AlertCircle
+} from 'lucide-react';
 
 export const LoginPage = () => {
   const { users, loginUser, registerUser } = useApp();
@@ -10,7 +23,7 @@ export const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState('Personal Learner');
-  const [avatarColor, setAvatarColor] = useState('#6366f1');
+  const [avatarColor, setAvatarColor] = useState('#2563eb');
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleLogin = (e) => {
@@ -35,13 +48,13 @@ export const LoginPage = () => {
     if (!res.success) setErrorMsg(res.message);
   };
 
-  const colors = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
+  const colors = ['#2563eb', '#0284c7', '#0d9488', '#10b981', '#475569', '#6366f1'];
 
   const features = [
-    { icon: Target, title: 'Goal Tracking', desc: 'Daily, Monthly & Yearly goals oo la raad-raaco', color: '#6366f1' },
-    { icon: GraduationCap, title: 'Course Manager', desc: 'Online courses oo progress-ka la hubiyo', color: '#8b5cf6' },
-    { icon: Award, title: 'Certificate Vault', desc: 'Shahadooyinka oo la upload-gareeyo & la keydiyo', color: '#f59e0b' },
-    { icon: Calendar, title: 'Smart Calendar', desc: 'Reminders & jadwal isku xiran la goals-ka', color: '#10b981' }
+    { icon: Target, title: 'Goal Tracking', desc: 'Daily, Monthly & Yearly goal management' },
+    { icon: GraduationCap, title: 'Course Manager', desc: 'Online course tracking & milestones' },
+    { icon: Award, title: 'Certificate Vault', desc: 'Secure credential storage & verification' },
+    { icon: Calendar, title: 'Smart Calendar', desc: 'Integrated reminders & goal schedules' }
   ];
 
   return (
@@ -49,97 +62,62 @@ export const LoginPage = () => {
       minHeight: '100vh',
       width: '100%',
       display: 'flex',
-      background: 'var(--bg-primary)',
-      backgroundImage: `
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.2) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
-        radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.08) 0px, transparent 50%)
-      `,
-      backgroundAttachment: 'fixed'
+      background: 'var(--bg-primary)'
     }}>
-      {/* LEFT SIDE: Hero / Branding Panel */}
+      {/* LEFT SIDE: Corporate Branding Panel */}
       <div style={{
-        flex: '1.1',
+        flex: '1',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         padding: '4rem 3.5rem',
-        position: 'relative',
-        overflow: 'hidden'
+        background: 'var(--bg-secondary)',
+        borderRight: '1px solid var(--border-color)'
       }}
         className="login-hero-panel"
       >
-        {/* Decorative Blobs */}
-        <div style={{
-          position: 'absolute',
-          top: '-120px',
-          left: '-80px',
-          width: '350px',
-          height: '350px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1))',
-          filter: 'blur(80px)',
-          zIndex: 0
-        }} />
-        <div style={{
-          position: 'absolute',
-          bottom: '-60px',
-          right: '-40px',
-          width: '250px',
-          height: '250px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.1))',
-          filter: 'blur(60px)',
-          zIndex: 0
-        }} />
-
-        <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '480px' }}>
           {/* Brand Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '2.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
             <div style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '16px',
-              background: 'var(--gradient-primary)',
+              width: '40px',
+              height: '40px',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--accent-primary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'white',
-              boxShadow: '0 8px 25px rgba(99, 102, 241, 0.4)'
+              color: 'white'
             }}>
-              <ShieldCheck size={28} />
+              <ShieldCheck size={22} />
             </div>
             <div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 800, background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                SelfTracker Pro
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                SelfTracker Enterprise
               </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>Personal Growth Platform</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Professional Personal Growth Platform</div>
             </div>
           </div>
 
           {/* Headline */}
           <h1 style={{
             fontFamily: 'var(--font-heading)',
-            fontSize: '2.6rem',
+            fontSize: '2.25rem',
             fontWeight: 800,
-            lineHeight: 1.15,
+            lineHeight: 1.2,
             color: 'var(--text-primary)',
             marginBottom: '1rem',
-            maxWidth: '500px'
+            letterSpacing: '-0.02em'
           }}>
-            Track Your Goals,<br />
-            <span style={{ background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Grow Every Day.
-            </span>
+            Manage Goals, Courses & Certifications with Precision.
           </h1>
 
-          <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', maxWidth: '460px', lineHeight: 1.7, marginBottom: '2.5rem' }}>
-            Nidaam casri ah oo aad ku raad-raacdo yoolalkaaga maanta, bishan & sanadkan. 
-            Ku keydso shahadooyinkaaga, koorsooyinkaaga, iyo jadwalkaaga meel ammaan ah.
+          <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '2.5rem' }}>
+            Nidaam casri ah oo loogu talagalay maareynta yoolalkaaga, koorsooyinkaaga, iyo shahadooyinkaaga. Wax walba oo aad u baahan tahay waxay ku keydsan yihiin meel ammaan ah.
           </p>
 
-          {/* Feature Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', maxWidth: '480px' }}>
+          {/* Feature List */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem' }}>
             {features.map((f, i) => {
               const Icon = f.icon;
               return (
@@ -147,26 +125,26 @@ export const LoginPage = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.75rem',
-                  padding: '0.85rem 1rem',
-                  borderRadius: 'var(--radius-md)',
-                  background: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid var(--border-color)',
-                  transition: 'all 0.2s ease'
+                  padding: '0.85rem',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid var(--border-color)'
                 }}>
                   <div style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '10px',
-                    background: `${f.color}20`,
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: 'var(--radius-sm)',
+                    background: 'rgba(37, 99, 235, 0.1)',
+                    color: 'var(--accent-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <Icon size={18} style={{ color: f.color }} />
+                    <Icon size={16} />
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>{f.title}</div>
+                    <div style={{ fontWeight: 600, fontSize: '0.825rem', color: 'var(--text-primary)' }}>{f.title}</div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{f.desc}</div>
                   </div>
                 </div>
@@ -176,49 +154,34 @@ export const LoginPage = () => {
         </div>
       </div>
 
-      {/* RIGHT SIDE: Login / Signup Form Panel */}
+      {/* RIGHT SIDE: Authentication Form Panel */}
       <div style={{
-        flex: '0.9',
+        flex: '1',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2rem'
+        padding: '2.5rem'
       }}>
         <div style={{
           width: '100%',
-          maxWidth: '420px',
-          background: 'var(--glass-bg)',
-          backdropFilter: 'var(--glass-backdrop)',
+          maxWidth: '400px',
+          background: 'var(--bg-card)',
           border: '1px solid var(--border-color)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '2.5rem',
-          boxShadow: 'var(--shadow-lg)'
+          borderRadius: 'var(--radius-md)',
+          padding: '2.25rem',
+          boxShadow: 'var(--shadow-md)'
         }}>
-          {/* Form Header */}
-          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
-            <div style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'var(--gradient-primary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              margin: '0 auto 0.85rem auto',
-              boxShadow: '0 6px 20px rgba(99, 102, 241, 0.35)'
-            }}>
-              {mode === 'login' ? <LogIn size={24} /> : <UserPlus size={24} />}
-            </div>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 700 }}>
-              {mode === 'login' ? 'Welcome Back!' : 'Create Your Account'}
+          {/* Header */}
+          <div style={{ marginBottom: '1.75rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              {mode === 'login' ? 'Sign In to Your Workspace' : 'Create an Account'}
             </h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              {mode === 'login' ? 'Geli Username-kaaga iyo Password-kaaga' : 'Samayso account cusub si aad u bilowdo'}
+            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              {mode === 'login' ? 'Geli username-kaaga iyo password-kaaga' : 'Ku dar username iyo password cusub'}
             </p>
           </div>
 
-          {/* Tab Switcher */}
+          {/* Mode Switcher */}
           <div className="tab-row" style={{ width: '100%', marginBottom: '1.5rem' }}>
             <button 
               className={`tab-button ${mode === 'login' ? 'active' : ''}`}
@@ -238,33 +201,72 @@ export const LoginPage = () => {
 
           {errorMsg && (
             <div style={{
-              background: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#fca5a5',
-              padding: '0.75rem 1rem',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '0.85rem',
-              marginBottom: '1.25rem'
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.25)',
+              color: '#f87171',
+              padding: '0.7rem 0.85rem',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '0.825rem',
+              marginBottom: '1.25rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
             }}>
-              ⚠️ {errorMsg}
+              <AlertCircle size={15} />
+              <span>{errorMsg}</span>
             </div>
           )}
 
           {mode === 'login' ? (
             <form onSubmit={handleLogin}>
+              {users.length > 0 && (
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.4rem', display: 'block' }}>
+                    Available Profiles:
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                    {users.map(u => (
+                      <button
+                        key={u.id}
+                        type="button"
+                        onClick={() => {
+                          setUsername(u.username);
+                          setErrorMsg('');
+                        }}
+                        style={{
+                          padding: '0.35rem 0.65rem',
+                          borderRadius: 'var(--radius-sm)',
+                          background: username === u.username ? 'rgba(37, 99, 235, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                          border: `1px solid ${username === u.username ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                          color: 'var(--text-primary)',
+                          fontSize: '0.8rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: u.avatarColor }} />
+                        <span>@{u.username}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="form-group">
                 <label>Username</label>
                 <div style={{ position: 'relative' }}>
                   <input 
                     type="text"
                     className="form-control"
-                    placeholder="Geli username-kaaga"
+                    placeholder="Geli username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
                     autoFocus
                   />
-                  <User size={17} style={{ position: 'absolute', right: '12px', top: '13px', color: 'var(--text-muted)' }} />
+                  <User size={15} style={{ position: 'absolute', right: '10px', top: '11px', color: 'var(--text-muted)' }} />
                 </div>
               </div>
 
@@ -274,27 +276,27 @@ export const LoginPage = () => {
                   <input 
                     type="password"
                     className="form-control"
-                    placeholder="Geli password-kaaga"
+                    placeholder="Geli password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
-                  <Lock size={17} style={{ position: 'absolute', right: '12px', top: '13px', color: 'var(--text-muted)' }} />
+                  <Lock size={15} style={{ position: 'absolute', right: '10px', top: '11px', color: 'var(--text-muted)' }} />
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1.25rem', padding: '0.9rem', fontSize: '0.95rem' }}>
-                <LogIn size={18} /> Sign In <ArrowRight size={16} />
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem', padding: '0.75rem' }}>
+                <LogIn size={15} /> Sign In <ArrowRight size={14} />
               </button>
 
-              <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Account ma haysatid? <button type="button" onClick={() => { setMode('signup'); setErrorMsg(''); }} style={{ color: 'var(--accent-primary)', fontWeight: 700, background: 'none', textDecoration: 'underline' }}>Create Account</button>
+              <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Account ma lihid? <button type="button" onClick={() => { setMode('signup'); setErrorMsg(''); }} style={{ color: 'var(--accent-primary)', fontWeight: 600, background: 'none' }}>Create an Account</button>
               </div>
             </form>
           ) : (
             <form onSubmit={handleRegister}>
               <div className="form-group">
-                <label>Full Name / Magacaaga</label>
+                <label>Full Name</label>
                 <input 
                   type="text"
                   className="form-control"
@@ -323,7 +325,7 @@ export const LoginPage = () => {
                   <input 
                     type="password"
                     className="form-control"
-                    placeholder="Password sir ah"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -332,44 +334,43 @@ export const LoginPage = () => {
               </div>
 
               <div className="form-group">
-                <label>Role / Title (Optional)</label>
+                <label>Role / Position</label>
                 <input 
                   type="text"
                   className="form-control"
-                  placeholder="e.g. Student / Developer"
+                  placeholder="e.g. Software Engineer / Student"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                 />
               </div>
 
               <div className="form-group">
-                <label>Profile Color</label>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem' }}>
+                <label>Theme Badge Color</label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.2rem' }}>
                   {colors.map(c => (
                     <div 
                       key={c}
                       onClick={() => setAvatarColor(c)}
                       style={{
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: 'var(--radius-sm)',
                         background: c,
                         cursor: 'pointer',
-                        border: avatarColor === c ? '3px solid white' : '2px solid transparent',
-                        boxShadow: avatarColor === c ? `0 0 0 2px ${c}` : 'none',
-                        transition: 'all 0.2s ease'
+                        border: avatarColor === c ? '2px solid white' : '1px solid var(--border-color)',
+                        boxShadow: avatarColor === c ? '0 0 0 1px var(--accent-primary)' : 'none'
                       }}
                     />
                   ))}
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1.25rem', padding: '0.9rem', fontSize: '0.95rem' }}>
-                <UserPlus size={18} /> Create Account <ArrowRight size={16} />
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem', padding: '0.75rem' }}>
+                <UserPlus size={15} /> Create Account <ArrowRight size={14} />
               </button>
 
-              <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Horay account u haysataa? <button type="button" onClick={() => { setMode('login'); setErrorMsg(''); }} style={{ color: 'var(--accent-primary)', fontWeight: 700, background: 'none', textDecoration: 'underline' }}>Sign In</button>
+              <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Horay account ma u lahayd? <button type="button" onClick={() => { setMode('login'); setErrorMsg(''); }} style={{ color: 'var(--accent-primary)', fontWeight: 600, background: 'none' }}>Sign In</button>
               </div>
             </form>
           )}
@@ -377,22 +378,21 @@ export const LoginPage = () => {
           <div style={{
             marginTop: '1.5rem',
             textAlign: 'center',
-            fontSize: '0.75rem',
+            fontSize: '0.72rem',
             color: 'var(--text-muted)',
             borderTop: '1px solid var(--border-color)',
-            paddingTop: '1rem',
+            paddingTop: '0.85rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.35rem'
           }}>
             <Shield size={12} />
-            <span>Cloud Synced • Xogtaadu waa ammaan</span>
+            <span>Cloud Database Synchronization Active</span>
           </div>
         </div>
       </div>
 
-      {/* Responsive: Stack on mobile */}
       <style>{`
         @media (max-width: 900px) {
           .login-hero-panel { display: none !important; }

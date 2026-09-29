@@ -6,6 +6,11 @@ import {
   Trash2, 
   Award,
   ArrowLeft,
+  Calendar,
+  Clock,
+  Tag,
+  Trophy,
+  Compass,
   X
 } from 'lucide-react';
 
@@ -24,10 +29,9 @@ export const GoalTracker = () => {
     setActiveTab
   } = useApp();
 
-  const [activeSubTab, setActiveSubTab] = useState('daily'); // 'daily', 'monthly', 'yearly'
+  const [activeSubTab, setActiveSubTab] = useState('daily');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Form state for creating goals
   const [goalTitle, setGoalTitle] = useState('');
   const [category, setCategory] = useState('Study');
   const [priority, setPriority] = useState('medium');
@@ -60,25 +64,25 @@ export const GoalTracker = () => {
       {/* Navigation Breadcrumb Back Button */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('dashboard')}>
-          <ArrowLeft size={16} /> Dashboard
+          <ArrowLeft size={14} /> Dashboard
         </button>
         <span style={{ color: 'var(--text-muted)' }}>/</span>
-        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Goal Management</span>
+        <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>Goal Management</span>
       </div>
 
       {/* Header Banner */}
       <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Target style={{ color: 'var(--accent-primary)' }} /> Goal Management (3-Tier Goals)
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.35rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
+            <Target size={20} style={{ color: 'var(--accent-primary)' }} /> Goal Management
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
-            U maamul yoolalkaaga 3 qeybood: <strong>Daily</strong>, <strong>Monthly</strong>, iyo <strong>Yearly</strong>.
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
+            U maamul yoolalkaaga 3 heer: <strong>Daily</strong>, <strong>Monthly</strong>, iyo <strong>Yearly</strong>.
           </p>
         </div>
 
         <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-          <Plus size={18} /> Ku Dar Yool Cusub ({activeSubTab.toUpperCase()})
+          <Plus size={16} /> Ku Dar Yool ({activeSubTab.toUpperCase()})
         </button>
       </div>
 
@@ -87,22 +91,25 @@ export const GoalTracker = () => {
         <button 
           className={`tab-button ${activeSubTab === 'daily' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('daily')}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}
         >
-          📅 Yoolalka Maanta (Daily Goals) [{userData.dailyGoals ? userData.dailyGoals.length : 0}]
+          <Calendar size={14} /> Daily Goals [{userData?.dailyGoals ? userData.dailyGoals.length : 0}]
         </button>
 
         <button 
           className={`tab-button ${activeSubTab === 'monthly' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('monthly')}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}
         >
-          🗓️ Yoolalka Bishan (Monthly Goals) [{userData.monthlyGoals ? userData.monthlyGoals.length : 0}]
+          <Compass size={14} /> Monthly Goals [{userData?.monthlyGoals ? userData.monthlyGoals.length : 0}]
         </button>
 
         <button 
           className={`tab-button ${activeSubTab === 'yearly' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('yearly')}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}
         >
-          🏆 Yoolalka Sanadkan (Yearly Goals) [{userData.yearlyGoals ? userData.yearlyGoals.length : 0}]
+          <Trophy size={14} /> Yearly Goals [{userData?.yearlyGoals ? userData.yearlyGoals.length : 0}]
         </button>
       </div>
 
@@ -110,8 +117,8 @@ export const GoalTracker = () => {
 
       {/* 1. DAILY GOALS TAB */}
       {activeSubTab === 'daily' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {(!userData.dailyGoals || userData.dailyGoals.length === 0) ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {(!userData?.dailyGoals || userData.dailyGoals.length === 0) ? (
             <div className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
               Wax yool ah maanta weli ma aadan ku darin.
             </div>
@@ -124,40 +131,44 @@ export const GoalTracker = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '1.1rem 1.35rem',
-                  borderLeft: `4px solid ${goal.priority === 'high' ? 'var(--accent-danger)' : goal.priority === 'medium' ? 'var(--accent-warning)' : 'var(--accent-success)'}`
+                  padding: '0.85rem 1.15rem',
+                  borderLeft: `3px solid ${goal.priority === 'high' ? 'var(--accent-danger)' : goal.priority === 'medium' ? 'var(--accent-warning)' : 'var(--accent-success)'}`
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <input 
                     type="checkbox"
                     checked={goal.completed}
                     onChange={() => toggleDailyGoal(goal.id)}
-                    style={{ width: '20px', height: '20px', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
+                    style={{ width: '17px', height: '17px', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
                   />
                   <div>
                     <div style={{ 
-                      fontWeight: '700', 
-                      fontSize: '1.05rem', 
+                      fontWeight: 600, 
+                      fontSize: '0.925rem', 
                       textDecoration: goal.completed ? 'line-through' : 'none',
                       color: goal.completed ? 'var(--text-muted)' : 'var(--text-primary)'
                     }}>
                       {goal.title}
                     </div>
-                    <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', display: 'flex', gap: '0.8rem', marginTop: '0.2rem' }}>
-                      <span>🕒 {goal.time}</span>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.65rem', marginTop: '0.2rem' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Clock size={12} /> {goal.time}
+                      </span>
                       <span>•</span>
-                      <span>🏷️ {goal.category}</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Tag size={12} /> {goal.category}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span className={`pill pill-${goal.priority}`}>
                     {goal.priority}
                   </span>
                   <button className="btn-icon" onClick={() => deleteDailyGoal(goal.id)} title="Delete Goal">
-                    <Trash2 size={16} color="var(--accent-danger)" />
+                    <Trash2 size={15} color="var(--accent-danger)" />
                   </button>
                 </div>
               </div>
@@ -169,9 +180,9 @@ export const GoalTracker = () => {
       {/* 2. MONTHLY GOALS TAB */}
       {activeSubTab === 'monthly' && (
         <div className="grid-2">
-          {(!userData.monthlyGoals || userData.monthlyGoals.length === 0) ? (
+          {(!userData?.monthlyGoals || userData.monthlyGoals.length === 0) ? (
             <div className="card" style={{ gridColumn: 'span 2', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-              Wax yool bisha ah weli ma ku jiraan.
+              Wax yool bisha ah weli kuma jiraan.
             </div>
           ) : (
             userData.monthlyGoals.map(goal => (
@@ -179,31 +190,31 @@ export const GoalTracker = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                   <div>
                     <span className="pill pill-in-progress" style={{ marginBottom: '0.4rem' }}>{goal.month}</span>
-                    <h3 style={{ fontWeight: 700, fontSize: '1.1rem', marginTop: '0.2rem' }}>{goal.title}</h3>
+                    <h3 style={{ fontWeight: 600, fontSize: '1rem', marginTop: '0.2rem' }}>{goal.title}</h3>
                   </div>
                   <button className="btn-icon" onClick={() => deleteMonthlyGoal(goal.id)}>
-                    <Trash2 size={16} color="var(--accent-danger)" />
+                    <Trash2 size={15} color="var(--accent-danger)" />
                   </button>
                 </div>
 
-                <div style={{ margin: '1rem 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
+                <div style={{ margin: '0.85rem 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
                     <span>Target Progress</span>
                     <span><strong>{goal.currentProgress}</strong> / {goal.targetProgress}%</span>
                   </div>
                   
-                  <div className="progress-bar-container" style={{ height: '10px' }}>
+                  <div className="progress-bar-container" style={{ height: '7px' }}>
                     <div 
                       className="progress-bar-fill" 
                       style={{ 
                         width: `${Math.min(100, (goal.currentProgress / goal.targetProgress) * 100)}%`,
-                        background: goal.currentProgress >= goal.targetProgress ? 'var(--accent-success)' : 'var(--gradient-primary)'
+                        background: goal.currentProgress >= goal.targetProgress ? 'var(--accent-success)' : 'var(--accent-primary)'
                       }} 
                     />
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1rem' }}>
                   <input 
                     type="range" 
                     min="0" 
@@ -212,7 +223,7 @@ export const GoalTracker = () => {
                     onChange={(e) => updateMonthlyProgress(goal.id, Number(e.target.value))}
                     style={{ flex: 1, accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
                   />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{goal.currentProgress}%</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{goal.currentProgress}%</span>
                 </div>
               </div>
             ))
@@ -222,8 +233,8 @@ export const GoalTracker = () => {
 
       {/* 3. YEARLY GOALS TAB */}
       {activeSubTab === 'yearly' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {(!userData.yearlyGoals || userData.yearlyGoals.length === 0) ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {(!userData?.yearlyGoals || userData.yearlyGoals.length === 0) ? (
             <div className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
               Wax yool sanadeed ah weli ma jiraan.
             </div>
@@ -233,32 +244,33 @@ export const GoalTracker = () => {
                 key={goal.id} 
                 className="card"
                 style={{
-                  borderLeft: `5px solid ${goal.achieved ? 'var(--accent-success)' : 'var(--accent-secondary)'}`
+                  borderLeft: `3px solid ${goal.achieved ? 'var(--accent-success)' : 'var(--accent-primary)'}`
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                   <div>
-                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.3rem' }}>
+                    <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.3rem' }}>
                       <span className="pill pill-in-progress">Year {goal.year}</span>
                       <span className="pill pill-pending">{goal.quarter} Target</span>
                     </div>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: '700' }}>{goal.title}</h3>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 600 }}>{goal.title}</h3>
                     {goal.vision && (
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.3rem' }}>
-                        💡 Vision: {goal.vision}
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '0.825rem', marginTop: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        <Compass size={13} />
+                        <span>Vision: {goal.vision}</span>
                       </p>
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                     <button 
-                      className={`btn ${goal.achieved ? 'btn-secondary' : 'btn-primary'}`}
+                      className={`btn ${goal.achieved ? 'btn-secondary' : 'btn-primary'} btn-sm`}
                       onClick={() => toggleYearlyGoal(goal.id)}
                     >
-                      <Award size={16} /> {goal.achieved ? 'Mark Pending' : 'Mark Achieved!'}
+                      <Award size={14} /> {goal.achieved ? 'Mark Pending' : 'Mark Achieved'}
                     </button>
                     <button className="btn-icon" onClick={() => deleteYearlyGoal(goal.id)}>
-                      <Trash2 size={16} color="var(--accent-danger)" />
+                      <Trash2 size={15} color="var(--accent-danger)" />
                     </button>
                   </div>
                 </div>
@@ -281,11 +293,11 @@ export const GoalTracker = () => {
 
             <form onSubmit={handleCreateGoal}>
               <div className="form-group">
-                <label>Goal Title / Magaca Yoolka</label>
+                <label>Goal Title</label>
                 <input 
                   type="text" 
                   className="form-control" 
-                  placeholder="e.g., Complete 3 Leetcode problems" 
+                  placeholder="e.g. Complete 3 modules of course" 
                   value={goalTitle}
                   onChange={(e) => setGoalTitle(e.target.value)}
                   required
@@ -362,11 +374,11 @@ export const GoalTracker = () => {
                   </div>
 
                   <div className="form-group">
-                    <label>Long Term Vision / Statement</label>
+                    <label>Long Term Vision Statement</label>
                     <textarea 
                       className="form-control" 
                       rows={3} 
-                      placeholder="Why is this goal important to you?" 
+                      placeholder="Why is this strategic milestone important?" 
                       value={vision}
                       onChange={(e) => setVision(e.target.value)}
                     />
@@ -374,7 +386,7 @@ export const GoalTracker = () => {
                 </>
               )}
 
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                 <button type="button" className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>
                   Cancel
                 </button>

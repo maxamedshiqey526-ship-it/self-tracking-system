@@ -9,6 +9,9 @@ import {
   Trash2, 
   Eye, 
   ArrowLeft,
+  User,
+  Clock,
+  ExternalLink,
   X 
 } from 'lucide-react';
 
@@ -26,13 +29,11 @@ export const CourseTracker = () => {
   const [isAddCourseModal, setIsAddCourseModal] = useState(false);
   const [selectedCourseForCert, setSelectedCourseForCert] = useState(null);
 
-  // Form states for adding course
   const [title, setTitle] = useState('');
   const [platform, setPlatform] = useState('Coursera');
   const [instructor, setInstructor] = useState('');
   const [hours, setHours] = useState('30');
 
-  // Form states for uploading certificate
   const [certTitle, setCertTitle] = useState('');
   const [issuer, setIssuer] = useState('');
   const [issueDate, setIssueDate] = useState('');
@@ -78,7 +79,7 @@ export const CourseTracker = () => {
     setFileUrl('');
   };
 
-  const courses = userData.courses || [];
+  const courses = userData?.courses || [];
   const completedWithCert = courses.filter(c => c.certificate !== null);
 
   return (
@@ -86,52 +87,52 @@ export const CourseTracker = () => {
       {/* Navigation Breadcrumb Back Button */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('dashboard')}>
-          <ArrowLeft size={16} /> Dashboard
+          <ArrowLeft size={14} /> Dashboard
         </button>
         <span style={{ color: 'var(--text-muted)' }}>/</span>
-        <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Courses & Certificates</span>
+        <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>Courses & Certificates</span>
       </div>
 
       {/* Header Banner */}
       <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <GraduationCap style={{ color: 'var(--accent-secondary)' }} /> Online Course & Shahada Vault
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.35rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
+            <GraduationCap size={20} style={{ color: 'var(--accent-primary)' }} /> Courses & Certificate Vault
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
-            Raac koorsooyinkaaga online-ka ah, dhameystir, oo ku <strong>keydso shahadooyinkaaga (Certificates)</strong>.
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
+            Raac koorsooyinkaaga online-ka ah, cusbooneysii horumarka, oo <strong>keydso shahadooyinkaaga</strong>.
           </p>
         </div>
 
         <button className="btn btn-primary" onClick={() => setIsAddCourseModal(true)}>
-          <Plus size={18} /> Ku Dar Koorso Cusub
+          <Plus size={16} /> Ku Dar Koorso
         </button>
       </div>
 
       {/* Shahada Vault Summary Card */}
-      <div className="card" style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.05) 100%)', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+      <div className="card" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--gradient-gold)', display: 'flex', alignItems: 'center', justifyCenter: 'center', color: 'white' }}>
-              <Award size={26} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-sm)', background: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-warning)' }}>
+              <Award size={22} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '700' }}>Shahadooyinka Keydsan (Stored Certificates)</h3>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                Waxaad nidaamka ku keydsatay <strong>{completedWithCert.length}</strong> shahado oo koorso ah.
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)' }}>Stored Certificates</h3>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                Waxaad nidaamka ku keydsatay <strong>{completedWithCert.length}</strong> shahado oo xaqiijisan.
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {completedWithCert.map((course, idx) => (
               <button 
                 key={course.id}
                 className="btn btn-secondary btn-sm"
                 onClick={() => setSelectedCertificate(course.certificate)}
-                style={{ borderColor: 'rgba(245, 158, 11, 0.4)', color: 'var(--accent-warning)' }}
+                style={{ fontSize: '0.8rem' }}
               >
-                <Eye size={14} /> Shahada #{idx + 1}
+                <Eye size={13} /> Certificate #{idx + 1}
               </button>
             ))}
           </div>
@@ -142,46 +143,52 @@ export const CourseTracker = () => {
       <div className="grid-2">
         {courses.length === 0 ? (
           <div className="card" style={{ gridColumn: 'span 2', textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-            Weli ma ku jiro koorso aad dhameyso ama ku jiro.
+            Weli kuma jiro koorso aad dhameyso ama ku jirto.
           </div>
         ) : (
           courses.map((course) => (
             <div key={course.id} className="card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.85rem' }}>
                 <div>
-                  <span className="pill pill-in-progress" style={{ marginBottom: '0.4rem' }}>{course.platform}</span>
-                  <h3 style={{ fontWeight: 700, fontSize: '1.15rem', marginTop: '0.2rem' }}>{course.title}</h3>
+                  <span className="pill pill-in-progress" style={{ marginBottom: '0.35rem' }}>{course.platform}</span>
+                  <h3 style={{ fontWeight: 600, fontSize: '1.05rem', marginTop: '0.2rem' }}>{course.title}</h3>
                   {course.instructor && (
-                    <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                      👨‍🏫 Instructor: {course.instructor} • ⏱️ {course.hours} Hours
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <User size={12} /> {course.instructor}
+                      </span>
+                      <span>•</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Clock size={12} /> {course.hours} Hours
+                      </span>
                     </div>
                   )}
                 </div>
 
-                <button className="btn-icon" onClick={() => deleteCourse(course.id)}>
-                  <Trash2 size={16} color="var(--accent-danger)" />
+                <button className="btn-icon" onClick={() => deleteCourse(course.id)} title="Delete Course">
+                  <Trash2 size={15} color="var(--accent-danger)" />
                 </button>
               </div>
 
               {/* Progress Section */}
-              <div style={{ margin: '1rem 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>
+              <div style={{ margin: '0.85rem 0' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
                   <span>Completion Status</span>
                   <span><strong>{course.progress}%</strong></span>
                 </div>
-                <div className="progress-bar-container" style={{ height: '10px' }}>
+                <div className="progress-bar-container" style={{ height: '7px' }}>
                   <div 
                     className="progress-bar-fill" 
                     style={{ 
                       width: `${course.progress}%`,
-                      background: course.progress === 100 ? 'var(--accent-success)' : 'var(--gradient-primary)'
+                      background: course.progress === 100 ? 'var(--accent-success)' : 'var(--accent-primary)'
                     }} 
                   />
                 </div>
               </div>
 
               {/* Quick Slider to update course percentage */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '1rem 0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0.85rem 0' }}>
                 <input 
                   type="range"
                   min="0"
@@ -190,21 +197,21 @@ export const CourseTracker = () => {
                   onChange={(e) => updateCourseProgress(course.id, e.target.value)}
                   style={{ flex: 1, accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
                 />
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, minWidth: '35px' }}>{course.progress}%</span>
+                <span style={{ fontSize: '0.78rem', fontWeight: 600, minWidth: '32px' }}>{course.progress}%</span>
               </div>
 
               {/* Certificate Actions */}
-              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: '1rem' }}>
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem', marginTop: '0.85rem' }}>
                 {course.certificate ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-success)', fontSize: '0.85rem', fontWeight: 600 }}>
-                      <CheckCircle2 size={18} /> Shahadadii waa keydsan tahay
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-success)', fontSize: '0.8rem', fontWeight: 600 }}>
+                      <CheckCircle2 size={16} /> Shahadadii waa keydsan tahay
                     </div>
                     <button 
                       className="btn btn-secondary btn-sm"
                       onClick={() => setSelectedCertificate(course.certificate)}
                     >
-                      <Eye size={14} /> Eeg Shahadada
+                      <Eye size={13} /> View Certificate
                     </button>
                   </div>
                 ) : (
@@ -217,7 +224,7 @@ export const CourseTracker = () => {
                     }}
                     style={{ width: '100%' }}
                   >
-                    <Upload size={14} /> Keydso Shahadada Koorso (Attach Certificate)
+                    <Upload size={13} /> Keydso Shahadada (Upload Certificate)
                   </button>
                 )}
               </div>
@@ -239,7 +246,7 @@ export const CourseTracker = () => {
 
             <form onSubmit={handleCreateCourse}>
               <div className="form-group">
-                <label>Course Title / Magaca Koorsada</label>
+                <label>Course Title</label>
                 <input 
                   type="text" 
                   className="form-control" 
@@ -252,7 +259,7 @@ export const CourseTracker = () => {
 
               <div className="grid-2">
                 <div className="form-group">
-                  <label>Platform / Websaytka</label>
+                  <label>Platform / Institution</label>
                   <select className="form-control" value={platform} onChange={(e) => setPlatform(e.target.value)}>
                     <option value="Coursera">Coursera</option>
                     <option value="Udemy">Udemy</option>
@@ -274,17 +281,17 @@ export const CourseTracker = () => {
               </div>
 
               <div className="form-group">
-                <label>Instructor / Machadka</label>
+                <label>Instructor / University</label>
                 <input 
                   type="text" 
                   className="form-control" 
-                  placeholder="e.g. Andrew Ng / Harvard University"
+                  placeholder="e.g. Andrew Ng / Harvard Online"
                   value={instructor}
                   onChange={(e) => setInstructor(e.target.value)}
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                 <button type="button" className="btn btn-secondary" onClick={() => setIsAddCourseModal(false)}>
                   Cancel
                 </button>
@@ -303,8 +310,8 @@ export const CourseTracker = () => {
           <div className="modal-content">
             <div className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Award style={{ color: 'var(--accent-warning)' }} />
-                <h3>Keydso Shahadada ({selectedCourseForCert.title})</h3>
+                <Award size={18} style={{ color: 'var(--accent-warning)' }} />
+                <h3>Upload Certificate ({selectedCourseForCert.title})</h3>
               </div>
               <button className="btn-icon" onClick={() => setSelectedCourseForCert(null)}>
                 <X size={18} />
@@ -345,20 +352,20 @@ export const CourseTracker = () => {
               </div>
 
               <div className="form-group">
-                <label>Upload Certificate Image or PDF</label>
+                <label>Upload Certificate File (Image or PDF)</label>
                 <input 
                   type="file" 
                   accept="image/*,.pdf"
                   className="form-control" 
                   onChange={handleFileUpload}
                 />
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                  Faylka shahadada wuxuu toos ugu keydsami doonaa browserkaaga.
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                  Faylka shahadada wuxuu ku keydsami doonaa nidaamka.
                 </div>
               </div>
 
               <div className="form-group">
-                <label>Verification Link (Optional URL)</label>
+                <label>Verification Credential URL (Optional)</label>
                 <input 
                   type="url" 
                   className="form-control" 
@@ -368,12 +375,12 @@ export const CourseTracker = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                 <button type="button" className="btn btn-secondary" onClick={() => setSelectedCourseForCert(null)}>
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  Save Certificate to Vault
+                  Save to Vault
                 </button>
               </div>
             </form>

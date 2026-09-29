@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { User, KeyRound, Lock, Shield, X, Save, Palette, Edit } from 'lucide-react';
+import { User, Lock, X, Save, Edit3, AlertCircle } from 'lucide-react';
 
 export const EditProfileModal = () => {
   const { activeUser, updateUserProfile, isEditProfileModalOpen, setIsEditProfileModalOpen } = useApp();
@@ -9,7 +9,7 @@ export const EditProfileModal = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
-  const [avatarColor, setAvatarColor] = useState('#6366f1');
+  const [avatarColor, setAvatarColor] = useState('#2563eb');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export const EditProfileModal = () => {
       setUsername(activeUser.username || '');
       setPassword(activeUser.password || '');
       setRole(activeUser.role || '');
-      setAvatarColor(activeUser.avatarColor || '#6366f1');
+      setAvatarColor(activeUser.avatarColor || '#2563eb');
     }
   }, [activeUser, isEditProfileModalOpen]);
 
@@ -46,18 +46,18 @@ export const EditProfileModal = () => {
     }
   };
 
-  const colors = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
+  const colors = ['#2563eb', '#0284c7', '#0d9488', '#10b981', '#475569', '#6366f1'];
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '480px' }}>
+      <div className="modal-content" style={{ maxWidth: '460px' }}>
         <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Edit size={22} style={{ color: 'var(--accent-primary)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <Edit3 size={18} style={{ color: 'var(--accent-primary)' }} />
             <div>
-              <h3>Badal Profile-kaaga (Edit Profile)</h3>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Ku qoro magacaaga iyo password-kaaga cusub
+              <h3>Edit Profile</h3>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                Cusbooneysii magacaaga iyo xogtaada
               </div>
             </div>
           </div>
@@ -68,21 +68,25 @@ export const EditProfileModal = () => {
 
         {errorMsg && (
           <div style={{ 
-            background: 'rgba(239, 68, 68, 0.15)', 
-            border: '1px solid rgba(239, 68, 68, 0.3)', 
-            color: '#fca5a5', 
-            padding: '0.75rem 1rem', 
-            borderRadius: 'var(--radius-md)', 
-            fontSize: '0.85rem',
-            marginBottom: '1rem'
+            background: 'rgba(239, 68, 68, 0.1)', 
+            border: '1px solid rgba(239, 68, 68, 0.25)', 
+            color: '#f87171', 
+            padding: '0.65rem 0.85rem', 
+            borderRadius: 'var(--radius-sm)', 
+            fontSize: '0.825rem',
+            marginBottom: '1.15rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem'
           }}>
-            ⚠️ {errorMsg}
+            <AlertCircle size={15} />
+            <span>{errorMsg}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Magacaaga Full-ka ah (Display Name)</label>
+            <label>Display Name</label>
             <input 
               type="text"
               className="form-control"
@@ -95,11 +99,11 @@ export const EditProfileModal = () => {
 
           <div className="grid-2">
             <div className="form-group">
-              <label>Username Cusub</label>
+              <label>Username</label>
               <input 
                 type="text"
                 className="form-control"
-                placeholder="e.g. maxamed123"
+                placeholder="e.g. maxamed"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -107,9 +111,9 @@ export const EditProfileModal = () => {
             </div>
 
             <div className="form-group">
-              <label>Password Cusub</label>
+              <label>Password</label>
               <input 
-                type="text"
+                type="password"
                 className="form-control"
                 placeholder="Password"
                 value={password}
@@ -120,43 +124,43 @@ export const EditProfileModal = () => {
           </div>
 
           <div className="form-group">
-            <label>Role / Title</label>
+            <label>Role / Position</label>
             <input 
               type="text"
               className="form-control"
-              placeholder="e.g. Developer / Student"
+              placeholder="e.g. Software Engineer / Student"
               value={role}
               onChange={(e) => setRole(e.target.value)}
             />
           </div>
 
           <div className="form-group">
-            <label>Color Theme</label>
+            <label>Theme Badge Color</label>
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.2rem' }}>
               {colors.map(c => (
                 <div 
                   key={c}
                   onClick={() => setAvatarColor(c)}
                   style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
+                    width: '26px',
+                    height: '26px',
+                    borderRadius: 'var(--radius-sm)',
                     background: c,
                     cursor: 'pointer',
-                    border: avatarColor === c ? '3px solid white' : 'none',
-                    boxShadow: avatarColor === c ? '0 0 0 2px var(--accent-primary)' : 'none'
+                    border: avatarColor === c ? '2px solid white' : '1px solid var(--border-color)',
+                    boxShadow: avatarColor === c ? '0 0 0 1px var(--accent-primary)' : 'none'
                   }}
                 />
               ))}
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
             <button type="button" className="btn btn-secondary" onClick={() => setIsEditProfileModalOpen(false)}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-              <Save size={16} /> Save Changes & Sync Cloud
+              <Save size={15} /> Save Changes
             </button>
           </div>
         </form>
