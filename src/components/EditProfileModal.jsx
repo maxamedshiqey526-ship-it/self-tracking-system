@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { User, Lock, X, Save, Edit3, AlertCircle } from 'lucide-react';
+import { User, Lock, Mail, X, Save, Edit3, AlertCircle } from 'lucide-react';
 
 export const EditProfileModal = () => {
   const { activeUser, updateUserProfile, isEditProfileModalOpen, setIsEditProfileModalOpen } = useApp();
 
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
@@ -15,6 +16,7 @@ export const EditProfileModal = () => {
   useEffect(() => {
     if (activeUser) {
       setName(activeUser.name || '');
+      setEmail(activeUser.email || '');
       setUsername(activeUser.username || '');
       setPassword(activeUser.password || '');
       setRole(activeUser.role || '');
@@ -35,6 +37,7 @@ export const EditProfileModal = () => {
 
     const res = updateUserProfile({
       name: name.trim(),
+      email: email.trim(),
       username: username.trim(),
       password: password.trim(),
       role: role.trim(),
@@ -57,7 +60,7 @@ export const EditProfileModal = () => {
             <div>
               <h3>Edit Profile</h3>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                Cusbooneysii magacaaga iyo xogtaada
+                Cusbooneysii magacaaga iyo xogtaada gaarka ah
               </div>
             </div>
           </div>
@@ -95,6 +98,20 @@ export const EditProfileModal = () => {
               onChange={(e) => setName(e.target.value)}
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label>Gmail / Email</label>
+            <div style={{ position: 'relative' }}>
+              <input 
+                type="email"
+                className="form-control"
+                placeholder="e.g. maxamed@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Mail size={15} style={{ position: 'absolute', right: '10px', top: '11px', color: 'var(--text-muted)' }} />
+            </div>
           </div>
 
           <div className="grid-2">

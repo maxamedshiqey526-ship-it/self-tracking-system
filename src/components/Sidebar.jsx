@@ -5,9 +5,8 @@ import {
   Target, 
   GraduationCap, 
   Calendar, 
-  Users, 
-  Award,
-  Sparkles,
+  User, 
+  ShieldCheck,
   X
 } from 'lucide-react';
 
@@ -17,7 +16,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, tag: 'Overview' },
     { id: 'goals', label: 'Goals (Daily/Mo/Yr)', icon: Target, tag: '3 Levels' },
-    { id: 'courses', label: 'Courses & Certificates', icon: GraduationCap, tag: 'Shahadooyinka' },
+    { id: 'courses', label: 'Courses & Certificates', icon: GraduationCap, tag: 'Certificates' },
     { id: 'calendar', label: 'Calendar & Reminders', icon: Calendar, tag: 'Schedule' }
   ];
 
@@ -29,21 +28,21 @@ export const Sidebar = ({ isOpen, onClose }) => {
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-header" style={{ justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Sparkles size={22} style={{ color: 'var(--accent-secondary)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <ShieldCheck size={20} style={{ color: 'var(--accent-primary)' }} />
           <div>
-            <div style={{ fontWeight: '700', fontSize: '1rem', color: 'var(--text-primary)' }}>Personal Growth</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Self-Tracking Platform</div>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>SelfTracker</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Enterprise Platform</div>
           </div>
         </div>
         {onClose && (
           <button 
             className="btn-icon mobile-menu-btn" 
             onClick={onClose}
-            style={{ width: '32px', height: '32px' }}
+            style={{ width: '28px', height: '28px' }}
             title="Close menu"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         )}
       </div>
@@ -58,14 +57,14 @@ export const Sidebar = ({ isOpen, onClose }) => {
               className={`nav-item ${isActive ? 'active' : ''}`}
               onClick={() => handleNavClick(item.id)}
             >
-              <Icon size={19} />
+              <Icon size={18} />
               <span style={{ flex: 1 }}>{item.label}</span>
               {item.tag && (
                 <span style={{
-                  fontSize: '0.68rem',
-                  padding: '0.15rem 0.45rem',
-                  borderRadius: '999px',
-                  background: isActive ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.06)',
+                  fontSize: '0.65rem',
+                  padding: '0.15rem 0.4rem',
+                  borderRadius: 'var(--radius-sm)',
+                  background: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.04)',
                   color: isActive ? '#ffffff' : 'var(--text-muted)'
                 }}>
                   {item.tag}
@@ -92,14 +91,14 @@ export const Sidebar = ({ isOpen, onClose }) => {
           {activeUser?.name?.charAt(0) || 'U'}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: '600', fontSize: '0.875rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontWeight: 600, fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {activeUser?.name || 'User Profile'}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {activeUser?.role || 'Personal Learner'}
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {activeUser?.email || activeUser?.role || 'Personal Learner'}
           </div>
         </div>
-        <Users size={16} style={{ color: 'var(--text-secondary)' }} />
+        <User size={14} style={{ color: 'var(--text-muted)' }} />
       </div>
     </aside>
   );

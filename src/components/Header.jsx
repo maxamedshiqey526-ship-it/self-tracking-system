@@ -4,7 +4,6 @@ import {
   Sun, 
   Moon, 
   UserCheck, 
-  Bell, 
   Menu, 
   ShieldCheck,
   Cloud,
@@ -20,12 +19,8 @@ export const Header = ({ onToggleSidebar }) => {
     setIsLoginModalOpen, 
     setIsEditProfileModalOpen, 
     logoutUser,
-    userData, 
     isCloudSyncing 
   } = useApp();
-
-  // Calculate pending reminders for notification badge
-  const pendingReminders = userData?.reminders ? userData.reminders.filter(r => !r.completed) : [];
 
   return (
     <header className="navbar">
@@ -39,8 +34,8 @@ export const Header = ({ onToggleSidebar }) => {
         </button>
         
         <div className="navbar-brand">
-          <ShieldCheck size={26} style={{ color: 'var(--accent-primary)' }} />
-          <span>SelfTracker Pro</span>
+          <ShieldCheck size={24} style={{ color: 'var(--accent-primary)' }} />
+          <span>SelfTracker Enterprise</span>
         </div>
       </div>
 
@@ -51,16 +46,16 @@ export const Header = ({ onToggleSidebar }) => {
             display: 'flex',
             alignItems: 'center',
             gap: '0.4rem',
-            padding: '0.3rem 0.7rem',
-            borderRadius: '999px',
-            background: 'rgba(255, 255, 255, 0.05)',
+            padding: '0.3rem 0.65rem',
+            borderRadius: 'var(--radius-sm)',
+            background: 'rgba(255, 255, 255, 0.03)',
             border: '1px solid var(--border-color)',
-            fontSize: '0.78rem',
+            fontSize: '0.75rem',
             color: 'var(--text-secondary)'
           }}
-          title="Live Cloud Database Sync across Mobile & PC"
+          title="Cloud Database Sync across Mobile & PC"
         >
-          <Cloud size={14} style={{ color: 'var(--accent-success)' }} />
+          <Cloud size={13} style={{ color: 'var(--accent-success)' }} />
           <span>{isCloudSyncing ? 'Syncing...' : 'Cloud Synced'}</span>
         </div>
 
@@ -70,40 +65,40 @@ export const Header = ({ onToggleSidebar }) => {
           onClick={toggleTheme}
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
-          {theme === 'dark' ? <Sun size={18} color="#f59e0b" /> : <Moon size={18} color="#6366f1" />}
+          {theme === 'dark' ? <Sun size={17} color="#f59e0b" /> : <Moon size={17} color="#2563eb" />}
         </button>
 
         {/* Edit Profile Button */}
         <button 
           className="btn-icon"
           onClick={() => setIsEditProfileModalOpen(true)}
-          title="Edit Profile (Badal Magacaaga/Password-ka)"
+          title="Edit Profile"
         >
-          <Edit3 size={17} color="var(--accent-primary)" />
+          <Edit3 size={16} color="var(--accent-primary)" />
         </button>
 
         {/* Account Switcher Button */}
         <button 
           className="btn btn-secondary btn-sm"
           onClick={() => setIsLoginModalOpen(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem 0.85rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', padding: '0.35rem 0.75rem' }}
         >
           <div style={{
-            width: '24px',
-            height: '24px',
-            borderRadius: '50%',
+            width: '22px',
+            height: '22px',
+            borderRadius: 'var(--radius-sm)',
             background: activeUser?.avatarColor || 'var(--accent-primary)',
             color: 'white',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontWeight: '700',
-            fontSize: '0.75rem'
+            fontWeight: 700,
+            fontSize: '0.725rem'
           }}>
             {activeUser?.name?.charAt(0) || 'U'}
           </div>
-          <span style={{ fontWeight: 600 }}>{activeUser?.name || 'User'}</span>
-          <UserCheck size={14} style={{ color: 'var(--accent-success)' }} />
+          <span style={{ fontWeight: 600, fontSize: '0.825rem' }}>{activeUser?.name || 'User'}</span>
+          <UserCheck size={13} style={{ color: 'var(--accent-success)' }} />
         </button>
 
         {/* Logout Button */}
@@ -113,7 +108,7 @@ export const Header = ({ onToggleSidebar }) => {
           title="Log out and return to Login Screen"
           style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}
         >
-          <LogOut size={15} /> Log Out
+          <LogOut size={14} /> Log Out
         </button>
       </div>
     </header>

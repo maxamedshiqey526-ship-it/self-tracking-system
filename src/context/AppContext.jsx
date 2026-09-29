@@ -8,7 +8,7 @@ const CLOUD_API_URL = `https://api.restful-api.dev/objects/${CLOUD_SYNC_ID}`;
 
 // Default starter accounts if cloud is empty
 const DEFAULT_ACCOUNTS = [
-  { id: 'u1', username: 'admin', password: '123', name: 'Primary User', role: 'Personal Learner', avatarColor: '#6366f1' }
+  { id: 'u1', username: 'admin', email: 'admin@selftracker.com', password: '123', name: 'Primary User', role: 'Personal Learner', avatarColor: '#2563eb' }
 ];
 
 const EMPTY_USER_DATA = {
@@ -155,21 +155,28 @@ export const AppProvider = ({ children }) => {
   };
 
   // Update Existing Profile
-  const updateUserProfile = ({ name, username, password, role, avatarColor }) => {
+  const updateUserProfile = ({ name, username, email, password, role, avatarColor }) => {
     if (!activeUser) return { success: false, message: 'No active profile to update!' };
 
     const cleanUsername = username.trim().toLowerCase();
+    const cleanEmail = (email || '').trim().toLowerCase();
     const cleanPassword = password.trim();
 
-    const exists = users.some(u => u.id !== activeUser.id && u.username.trim().toLowerCase() === cleanUsername);
+    const exists = users.some(u => 
+      u.id !== activeUser.id && (
+        u.username.trim().toLowerCase() === cleanUsername || 
+        (cleanEmail && u.email && u.email.trim().toLowerCase() === cleanEmail)
+      )
+    );
     if (exists) {
-      return { success: false, message: 'Username-kan horay ayaa loo isticmaalay! Dooro Username kale.' };
+      return { success: false, message: 'Username ama Email-kan horay ayaa loo isticmaalay! Dooro mid kale.' };
     }
 
     const updatedUser = {
       ...activeUser,
       name: name.trim() || activeUser.name,
       username: cleanUsername,
+      email: cleanEmail || activeUser.email || '',
       password: cleanPassword,
       role: role.trim() || activeUser.role,
       avatarColor: avatarColor || activeUser.avatarColor
@@ -190,23 +197,28 @@ export const AppProvider = ({ children }) => {
     return { success: true };
   };
 
-  // Register New Account (Production Real System: Unlimited Users)
-  const registerUser = ({ username, password, name, role, avatarColor }) => {
+  // Register New Account (Supports Email & Username)
+  const registerUser = ({ username, email, password, name, role, avatarColor }) => {
     const cleanUsername = username.trim().toLowerCase();
+    const cleanEmail = (email || '').trim().toLowerCase();
     const cleanPassword = password.trim();
 
-    const exists = users.some(u => u.username.trim().toLowerCase() === cleanUsername);
+    const exists = users.some(u => 
+      u.username.trim().toLowerCase() === cleanUsername || 
+      (cleanEmail && u.email && u.email.trim().toLowerCase() === cleanEmail)
+    );
     if (exists) {
-      return { success: false, message: 'Username-kan horay ayaa loo isticmaalay! Dooro Username kale.' };
+      return { success: false, message: 'Username-kan ama Email-kan horay ayaa loo isticmaalay! Dooro mid kale.' };
     }
 
     const newUser = {
       id: 'u_' + Date.now(),
       username: cleanUsername,
+      email: cleanEmail,
       password: cleanPassword,
       name: name.trim() || cleanUsername,
       role: role.trim() || 'Personal Learner',
-      avatarColor: avatarColor || '#6366f1'
+      avatarColor: avatarColor || '#2563eb'
     };
 
     const updatedUsers = [...users, newUser];
@@ -231,14 +243,16 @@ export const AppProvider = ({ children }) => {
     return { success: true };
   };
 
-  // Authenticate / Login User with Username & Password
-  const loginUser = (username, password) => {
-    const cleanUsername = username.trim().toLowerCase();
+  // Authenticate / Login User with Email or Username + Password
+  const loginUser = (identifier, password) => {
+    const cleanIdentifier = identifier.trim().toLowerCase();
     const cleanPassword = password.trim();
 
-    const found = users.find(
-      u => u.username.trim().toLowerCase() === cleanUsername && u.password.trim() === cleanPassword
-    );
+    const found = users.find(u => {
+      const matchUsername = u.username && u.username.trim().toLowerCase() === cleanIdentifier;
+      const matchEmail = u.email && u.email.trim().toLowerCase() === cleanIdentifier;
+      return (matchUsername || matchEmail) && u.password.trim() === cleanPassword;
+    });
 
     if (found) {
       setActiveUser(found);
@@ -247,8 +261,45 @@ export const AppProvider = ({ children }) => {
       setIsLoginModalOpen(false);
       return { success: true };
     } else {
-      return { success: false, message: 'Username ama Password-ka aad gelisay waa xaqiiqdaro! Hubi amase Sign Up samayso.' };
+      return { success: false, message: 'Username/Email ama Password-ka aad gelisay waa xaqiiqdaro! Hubi amase Sign Up samayso.' };
     }
+  };
+
+  // Reset Password Feature (Forgot Password)
+  const resetPassword = (identifier, newPassword) => {
+    const cleanIdentifier = identifier.trim().toLowerCase();
+    const cleanPassword = newPassword.trim();
+
+    const userIndex = users.findIndex(u => {
+      const matchUsername = u.username && u.username.trim().toLowerCase() === cleanIdentifier;
+      const matchEmail = u.email && u.email.trim().toLowerCase() === cleanIdentifier;
+      return matchUsername || matchEmail;
+    });
+
+    if (userIndex === -1) {
+      return { success: false, message: 'Lama helin account leh Email-kan ama Username-kan!' };
+    }
+
+    const updatedUser = {
+      ...users[userIndex],
+      password: cleanPassword
+    };
+
+    const updatedUsers = [...users];
+    updatedUsers[userIndex] = updatedUser;
+
+    setUsers(updatedUsers);
+    localStorage.setItem('self_tracker_registered_users', JSON.stringify(updatedUsers));
+
+    // If currently logged in as this user, update activeUser too
+    if (activeUser && activeUser.id === updatedUser.id) {
+      setActiveUser(updatedUser);
+      localStorage.setItem('self_tracker_active_session', JSON.stringify(updatedUser));
+    }
+
+    pushToCloud(updatedUsers, allUserDatasets);
+
+    return { success: true, message: 'Password-kaaga si guul leh ayaa loo cusbooneysiiyay! Hadda waad gali kartaa.' };
   };
 
   // Logout User Session
@@ -415,6 +466,7 @@ export const AppProvider = ({ children }) => {
         loginUser,
         logoutUser,
         registerUser,
+        resetPassword,
         updateUserProfile,
         switchUser,
         theme,
