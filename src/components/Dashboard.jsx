@@ -1,326 +1,52 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { 
-  CheckCircle2, 
-  Target, 
-  GraduationCap, 
-  Award, 
-  Bell, 
-  Flame, 
-  Plus, 
-  Clock, 
-  ArrowRight,
-  BookOpen,
-  Calendar,
-  CalendarCheck
-} from 'lucide-react';
+import { ArrowRight, Award, Bell, BookOpen, CalendarDays, Check, ChevronRight, Circle, Flame, GraduationCap, Plus, Sparkles, Target, Trophy, Zap } from 'lucide-react';
+
+const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 export const Dashboard = () => {
-  const { 
-    activeUser, 
-    userData, 
-    toggleDailyGoal, 
-    setActiveTab, 
-    setSelectedCertificate 
-  } = useApp();
-
+  const { activeUser, userData, toggleDailyGoal, setActiveTab, setSelectedCertificate } = useApp();
   const dailyGoals = userData?.dailyGoals || [];
-  const monthlyGoals = userData?.monthlyGoals || [];
   const courses = userData?.courses || [];
   const reminders = userData?.reminders || [];
+  const completedDaily = dailyGoals.filter((goal) => goal.completed).length;
+  const dailyProgress = dailyGoals.length ? Math.round((completedDaily / dailyGoals.length) * 100) : 0;
+  const completedCourses = courses.filter((course) => course.status === 'Completed').length;
+  const pendingReminders = reminders.filter((reminder) => !reminder.completed);
+  const nextGoal = dailyGoals.find((goal) => !goal.completed);
+  const focusScore = Math.round((dailyProgress * 0.65) + (courses.length ? (completedCourses / courses.length) * 35 : 0));
+  const firstName = activeUser?.name?.split(' ')[0] || 'Saxiib';
+  const today = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date());
+  const weeklyActivity = dayLabels.map((day, index) => ({ day, active: index < 4 ? Math.max(1, Math.min(4, Math.ceil(dailyProgress / 25) - (3 - index))) : 0 }));
 
-  // Calculations
-  const completedDaily = dailyGoals.filter(g => g.completed).length;
-  const totalDaily = dailyGoals.length;
-  const dailyProgressPercent = totalDaily > 0 ? Math.round((completedDaily / totalDaily) * 100) : 0;
-
-  const completedCourses = courses.filter(c => c.status === 'Completed').length;
-  const certificatesCount = courses.filter(c => c.certificate !== null).length;
-
-  const pendingReminders = reminders.filter(r => !r.completed);
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-      {/* Welcome Banner */}
-      <div 
-        className="card" 
-        style={{
-          background: 'var(--gradient-card)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '2rem',
-          flexWrap: 'wrap',
-          gap: '1.5rem'
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--accent-warning)', fontWeight: 600, fontSize: '0.8rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <Flame size={15} /> Continuous Progress
-          </div>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-            Soo dhawaw, {activeUser?.name || 'Saxiib'}
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '0.3rem', maxWidth: '600px', fontSize: '0.925rem' }}>
-            Kala soco yoolalkaaga maanta, koorsooyinkaaga, iyo shahadooyinkaaga. Waxaad maanta dhameysay <strong>{dailyProgressPercent}%</strong> yoolalkaaga maanta.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button className="btn btn-primary" onClick={() => setActiveTab('goals')}>
-            <Target size={16} /> Manage Goals
-          </button>
-          <button className="btn btn-secondary" onClick={() => setActiveTab('courses')}>
-            <GraduationCap size={16} /> Courses & Certificates
-          </button>
-        </div>
+  return <div className="dashboard-shell">
+    <section className="hero-command">
+      <div className="hero-orb hero-orb-one" /><div className="hero-orb hero-orb-two" />
+      <div className="hero-copy">
+        <div className="eyebrow"><Sparkles size={14} /> YOUR PERSONAL COMMAND CENTER</div>
+        <p className="hero-date">{today}</p>
+        <h1>Subax wanaagsan, <span>{firstName}</span>.</h1>
+        <p className="hero-description">Hal tallaabo oo aad maanta qaaddo ayaa dhisaysa nolosha aad rabto. Aan ka dhigno maalin wax ku ool ah.</p>
+        <div className="hero-actions"><button className="btn btn-primary" onClick={() => setActiveTab('goals')}><Plus size={16} /> Add a goal</button><button className="hero-link" onClick={() => setActiveTab('calendar')}>View your schedule <ArrowRight size={15} /></button></div>
       </div>
+      <div className="focus-score" aria-label={`Focus score ${focusScore} percent`}><div className="focus-ring" style={{ '--score': `${focusScore * 3.6}deg` }}><div><strong>{focusScore}</strong><span>/100</span></div></div><div className="focus-label"><Zap size={15} /> Focus score</div><p>{dailyGoals.length ? (focusScore >= 70 ? 'Great momentum today' : 'A strong start awaits') : 'Add goals to begin'}</p></div>
+    </section>
 
-      {/* Top Stats Bar */}
-      <div className="stat-grid">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(37, 99, 235, 0.1)', color: 'var(--accent-primary)' }}>
-            <Target size={22} />
-          </div>
-          <div>
-            <div className="stat-value">{completedDaily} / {totalDaily}</div>
-            <div className="stat-label">Daily Goals ({dailyProgressPercent}%)</div>
-          </div>
-        </div>
+    <section className="metric-strip">
+      <div className="metric"><div className="metric-icon blue"><Target size={19} /></div><div><strong>{completedDaily}<em>/{dailyGoals.length}</em></strong><span>Daily goals done</span></div></div>
+      <div className="metric"><div className="metric-icon amber"><Flame size={19} /></div><div><strong>{dailyGoals.length ? Math.max(1, completedDaily) : 0}<em> days</em></strong><span>Current streak</span></div></div>
+      <div className="metric"><div className="metric-icon violet"><GraduationCap size={19} /></div><div><strong>{completedCourses}<em>/{courses.length}</em></strong><span>Courses finished</span></div></div>
+      <div className="metric"><div className="metric-icon rose"><Bell size={19} /></div><div><strong>{pendingReminders.length}</strong><span>Open reminders</span></div></div>
+    </section>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-success)' }}>
-            <GraduationCap size={22} />
-          </div>
-          <div>
-            <div className="stat-value">{completedCourses} / {courses.length}</div>
-            <div className="stat-label">Courses Completed</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.1)', color: 'var(--accent-warning)' }}>
-            <Award size={22} />
-          </div>
-          <div>
-            <div className="stat-value">{certificatesCount}</div>
-            <div className="stat-label">Certificates Saved</div>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--accent-danger)' }}>
-            <Bell size={22} />
-          </div>
-          <div>
-            <div className="stat-value">{pendingReminders.length}</div>
-            <div className="stat-label">Pending Reminders</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Dashboard Section: 2 Columns */}
-      <div className="grid-2">
-        {/* Left Column: Goals of the Day Checklist */}
-        <div className="card">
-          <div className="card-header">
-            <div className="card-title">
-              <CheckCircle2 size={18} style={{ color: 'var(--accent-primary)' }} />
-              <span>Yoolalka Maanta (Goals of the Day)</span>
-            </div>
-            <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('goals')}>
-              View All <ArrowRight size={13} />
-            </button>
-          </div>
-
-          <div className="progress-bar-container" style={{ marginBottom: '1.25rem' }}>
-            <div className="progress-bar-fill" style={{ width: `${dailyProgressPercent}%` }} />
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            {dailyGoals.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
-                <Target size={32} style={{ color: 'var(--accent-primary)', opacity: 0.4, marginBottom: '0.75rem' }} />
-                <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                  Weli yoolal kuma jiraan maanta
-                </div>
-                <div style={{ fontSize: '0.825rem', marginBottom: '1rem' }}>
-                  Ku dar yoolkaaga ugu horreeya si aad u bilowdo raad-raaca maalinlaha ah.
-                </div>
-                <button className="btn btn-primary btn-sm" onClick={() => setActiveTab('goals')}>
-                  <Plus size={14} /> Ku Dar Yool
-                </button>
-              </div>
-            ) : (
-              dailyGoals.slice(0, 5).map((goal) => (
-                <div 
-                  key={goal.id} 
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.75rem 0.9rem',
-                    borderRadius: 'var(--radius-sm)',
-                    background: goal.completed ? 'rgba(16, 185, 129, 0.05)' : 'rgba(255, 255, 255, 0.02)',
-                    border: `1px solid ${goal.completed ? 'rgba(16, 185, 129, 0.2)' : 'var(--border-color)'}`,
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <input 
-                      type="checkbox" 
-                      checked={goal.completed} 
-                      onChange={() => toggleDailyGoal(goal.id)}
-                      style={{ width: '16px', height: '16px', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
-                    />
-                    <div>
-                      <div style={{ 
-                        fontWeight: '600', 
-                        fontSize: '0.9rem',
-                        textDecoration: goal.completed ? 'line-through' : 'none',
-                        color: goal.completed ? 'var(--text-muted)' : 'var(--text-primary)'
-                      }}>
-                        {goal.title}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.15rem' }}>
-                        <Clock size={11} />
-                        <span>{goal.time}</span>
-                        <span>•</span>
-                        <span>{goal.category}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <span className={`pill pill-${goal.priority}`}>
-                    {goal.priority}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Right Column: Courses & Shahado Overview */}
-        <div className="card">
-          <div className="card-header">
-            <div className="card-title">
-              <GraduationCap size={18} style={{ color: 'var(--accent-primary)' }} />
-              <span>Online Courses & Certificates</span>
-            </div>
-            <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('courses')}>
-              View Courses <ArrowRight size={13} />
-            </button>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {courses.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
-                <BookOpen size={32} style={{ color: 'var(--accent-primary)', opacity: 0.4, marginBottom: '0.75rem' }} />
-                <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                  Weli koorso kuma jirto
-                </div>
-                <div style={{ fontSize: '0.825rem', marginBottom: '1rem' }}>
-                  Ku dar koorsooyinka aad waddo si aad u raad-raacdo una keydsato shahadada.
-                </div>
-                <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('courses')}>
-                  <Plus size={14} /> Ku Dar Koorso
-                </button>
-              </div>
-            ) : (
-              courses.map(course => (
-                <div 
-                  key={course.id}
-                  style={{
-                    padding: '0.85rem 1rem',
-                    borderRadius: 'var(--radius-sm)',
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    border: '1px solid var(--border-color)'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.4rem' }}>
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{course.title}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{course.platform} • {course.hours} Hours</div>
-                    </div>
-                    <span className={`pill ${course.status === 'Completed' ? 'pill-completed' : 'pill-in-progress'}`}>
-                      {course.status}
-                    </span>
-                  </div>
-
-                  <div style={{ margin: '0.5rem 0' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>
-                      <span>Progress</span>
-                      <span>{course.progress}%</span>
-                    </div>
-                    <div className="progress-bar-container">
-                      <div className="progress-bar-fill" style={{ width: `${course.progress}%` }} />
-                    </div>
-                  </div>
-
-                  {course.certificate && (
-                    <button 
-                      className="btn btn-secondary btn-sm" 
-                      onClick={() => setSelectedCertificate(course.certificate)}
-                      style={{ marginTop: '0.4rem', width: '100%', fontSize: '0.78rem', color: 'var(--accent-warning)', borderColor: 'rgba(245, 158, 11, 0.3)' }}
-                    >
-                      <Award size={13} /> View Certificate
-                    </button>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Section: Reminders & Calendar Sync Preview */}
-      <div className="card">
-        <div className="card-header">
-          <div className="card-title">
-            <Bell size={18} style={{ color: 'var(--accent-warning)' }} />
-            <span>Reminders & Calendar Sync</span>
-          </div>
-          <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('calendar')}>
-            Open Calendar <ArrowRight size={13} />
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
-          {reminders.length === 0 ? (
-            <div style={{ color: 'var(--text-muted)', padding: '1.5rem', textAlign: 'center', gridColumn: '1 / -1' }}>
-              <CalendarCheck size={26} style={{ opacity: 0.4, marginBottom: '0.5rem' }} />
-              <div style={{ fontSize: '0.85rem' }}>Maya jiro xusuusiyo dhaw. Ku dar xusuusiye cusub kalandarkaaga.</div>
-            </div>
-          ) : (
-            reminders.slice(0, 3).map(rem => (
-              <div 
-                key={rem.id}
-                style={{
-                  padding: '0.85rem 1rem',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  borderLeft: `3px solid ${rem.urgency === 'Critical' ? 'var(--accent-danger)' : rem.urgency === 'Urgent' ? 'var(--accent-warning)' : 'var(--accent-primary)'}`,
-                  border: '1px solid var(--border-color)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{rem.title}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <Calendar size={12} />
-                    <span>{rem.date} at {rem.time}</span>
-                  </div>
-                </div>
-                <span className={`pill ${rem.urgency === 'Critical' ? 'pill-high' : rem.urgency === 'Urgent' ? 'pill-medium' : 'pill-pending'}`}>
-                  {rem.urgency}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+    <div className="command-grid">
+      <section className="command-card today-card"><div className="command-heading"><div><span className="section-kicker">TODAY'S PLAN</span><h2>Keep your promises</h2></div><button className="text-action" onClick={() => setActiveTab('goals')}>See all <ChevronRight size={16} /></button></div><div className="completion-line"><span>{completedDaily} of {dailyGoals.length || 0} complete</span><span>{dailyProgress}%</span></div><div className="large-progress"><i style={{ width: `${dailyProgress}%` }} /></div><div className="task-list">{dailyGoals.length ? dailyGoals.slice(0, 4).map((goal) => <button className={`task-row ${goal.completed ? 'is-complete' : ''}`} key={goal.id} onClick={() => toggleDailyGoal(goal.id)}><span className="task-check">{goal.completed ? <Check size={14} /> : <Circle size={16} />}</span><span className="task-copy"><strong>{goal.title}</strong><small>{goal.time || 'Anytime'} · {goal.category || 'Personal'}</small></span><span className={`priority-dot ${goal.priority || 'medium'}`} /></button>) : <div className="empty-state"><Target size={25} /><p>Maanta wali yool ma dejin.</p><button onClick={() => setActiveTab('goals')}>Create your first goal</button></div>}</div>{nextGoal && <div className="next-up"><span><Zap size={14} /> NEXT UP</span><strong>{nextGoal.title}</strong><button onClick={() => toggleDailyGoal(nextGoal.id)}>Mark done <Check size={14} /></button></div>}</section>
+      <section className="command-card momentum-card"><div className="command-heading"><div><span className="section-kicker">WEEKLY RHYTHM</span><h2>Show up, then grow</h2></div><span className="weekly-total"><Flame size={14} /> {completedDaily} wins</span></div><div className="week-chart">{weeklyActivity.map((item, index) => <div className="week-day" key={`${item.day}-${index}`}><div className="bar-track"><i style={{ height: `${item.active * 22}%` }} /></div><span>{item.day}</span></div>)}</div><div className="momentum-note"><div className="note-icon"><Trophy size={17} /></div><div><strong>Your momentum matters.</strong><p>{dailyProgress ? `You've completed ${dailyProgress}% of today's plan.` : 'Your next small win starts with one goal.'}</p></div></div><button className="outline-action" onClick={() => setActiveTab('goals')}>Explore your goals <ArrowRight size={15} /></button></section>
     </div>
-  );
+
+    <div className="command-grid lower-grid">
+      <section className="command-card course-card"><div className="command-heading"><div><span className="section-kicker">LEARNING PATH</span><h2>Continue learning</h2></div><button className="text-action" onClick={() => setActiveTab('courses')}>All courses <ChevronRight size={16} /></button></div>{courses.length ? courses.slice(0, 2).map((course) => <div className="course-row" key={course.id}><div className="course-mark"><BookOpen size={18} /></div><div className="course-copy"><strong>{course.title}</strong><span>{course.platform || 'Online learning'} · {course.hours || 0} hours</span><div className="mini-progress"><i style={{ width: `${course.progress || 0}%` }} /></div></div><div className="course-percent">{course.progress || 0}%</div>{course.certificate && <button className="certificate-button" onClick={() => setSelectedCertificate(course.certificate)}><Award size={14} /></button>}</div>) : <div className="empty-inline"><GraduationCap size={24} /><div><strong>Build your learning path</strong><p>Track courses and celebrate each certificate.</p></div><button onClick={() => setActiveTab('courses')}><Plus size={15} /></button></div>}</section>
+      <section className="command-card reminder-card"><div className="command-heading"><div><span className="section-kicker">COMING UP</span><h2>Don't lose track</h2></div><button className="text-action" onClick={() => setActiveTab('calendar')}>Calendar <CalendarDays size={16} /></button></div>{pendingReminders.length ? pendingReminders.slice(0, 2).map((reminder) => <div className="reminder-row" key={reminder.id}><div className={`reminder-date ${reminder.urgency === 'Critical' ? 'critical' : ''}`}><span>{reminder.date?.split(' ')[0] || 'UP'}</span><strong>{reminder.date?.split(' ')[1] || 'NEXT'}</strong></div><div><strong>{reminder.title}</strong><p>{reminder.time || 'No time set'} · {reminder.urgency || 'Scheduled'}</p></div></div>) : <div className="empty-inline"><CalendarDays size={24} /><div><strong>Your schedule is clear</strong><p>Add a reminder so important moments stay visible.</p></div><button onClick={() => setActiveTab('calendar')}><Plus size={15} /></button></div>}</section>
+    </div>
+  </div>;
 };
